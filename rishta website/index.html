@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RishtaElite — Where Families Begin New Journeys</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+
+  /* ============ LIGHT THEME (default) — warm terracotta/espresso, no plum ============ */
+  :root {
+    --bg-page: #FBF6EF;
+    --bg-surface: #FFFFFF;
+    --bg-surface-hover: #F7EDE1;
+    --bg-accent: #15120F;
+    --bg-accent-2: #241C15;
+    --text-primary: #1C1815;
+    --text-secondary: #6E6259;
+    --text-on-accent: #FBF6EF;
+    --text-on-accent-soft: #D8CCBE;
+    --primary: #C4602A;
+    --primary-hover: #A34E20;
+    --primary-on-accent: #F0954F;
+    --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #B8933F;
+    --border: rgba(28, 24, 21, 0.09);
+    --border-on-accent: rgba(251, 246, 239, 0.14);
+    --shadow-card: 0 24px 55px rgba(28, 24, 21, 0.13);
+    --overlay-glow: rgba(196, 96, 42, 0.32);
+  }
+
+  [data-theme="dark"] {
+    --bg-page: #0D0B09;
+    --bg-surface: #19140F;
+    --bg-surface-hover: #221A13;
+    --bg-accent: #1B1611;
+    --bg-accent-2: #271E16;
+    --text-primary: #F3ECE2;
+    --text-secondary: #B7A99A;
+    --text-on-accent: #FBF6EF;
+    --text-on-accent-soft: #D8CCBE;
+    --primary: #E8823D;
+    --primary-hover: #F0A164;
+    --primary-on-accent: #F0954F;
+    --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #D9B667;
+    --border: rgba(243, 236, 226, 0.10);
+    --border-on-accent: rgba(251, 246, 239, 0.14);
+    --shadow-card: 0 24px 55px rgba(0, 0, 0, 0.55);
+    --overlay-glow: rgba(232, 130, 61, 0.30);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+    cursor: default;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 600; line-height: 1.2; }
+  p { line-height: 1.75; color: var(--text-secondary); }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  img, svg { display: block; max-width: 100%; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  .urdu { font-family: 'Noto Nastaliq Urdu', serif; direction: rtl; }
+  [data-ur] { display: none; }
+  body.lang-ur [data-en] { display: none; }
+  body.lang-ur [data-ur] { display: inline; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- CURSOR GLOW (global, hero only) ---------- */
+  .cursor-glow {
+    position: absolute; width: 500px; height: 500px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, var(--overlay-glow), transparent 70%);
+    transform: translate(-50%, -50%); filter: blur(10px); z-index: 1;
+    opacity: 0; transition: opacity 0.4s ease; will-change: left, top;
+  }
+
+  /* ---------- NAV ---------- */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: color-mix(in srgb, var(--bg-accent) 90%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-on-accent);
+  }
+  nav { max-width: 1180px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text-on-accent); letter-spacing: 0.02em; display: flex; align-items: center; gap: 8px; }
+  .logo-mark { width: 22px; height: 22px; flex-shrink: 0; }
+  .nav-links { display: flex; align-items: center; gap: 36px; }
+  .nav-links a { font-size: 0.92rem; color: var(--text-on-accent-soft); font-weight: 500; position: relative; transition: color 0.25s ease; }
+  .nav-links a::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 1px; background: var(--primary-on-accent); transition: width 0.3s ease; }
+  .nav-links a:hover { color: var(--text-on-accent); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-right { display: flex; align-items: center; gap: 14px; }
+
+  .lang-toggle { display: flex; border: 1px solid var(--border-on-accent); border-radius: 100px; padding: 3px; }
+  .lang-toggle button { padding: 5px 13px; border-radius: 100px; font-size: 0.78rem; font-weight: 600; color: var(--text-on-accent-soft); transition: all 0.25s ease; }
+  .lang-toggle button.active { background: var(--primary); color: #fff; }
+
+  .theme-toggle { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-on-accent); display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; position: relative; }
+  .theme-toggle:hover { border-color: var(--primary-on-accent); transform: rotate(20deg); }
+  .theme-toggle svg { width: 17px; height: 17px; stroke: var(--text-on-accent-soft); transition: opacity 0.25s ease, transform 0.4s ease; position: absolute; }
+  .theme-toggle .icon-sun { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+  .theme-toggle .icon-moon { opacity: 1; transform: rotate(0) scale(1); }
+  [data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; transform: rotate(0) scale(1); }
+  [data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(90deg) scale(0.5); }
+
+  .btn { padding: 11px 24px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; transition: transform 0.2s cubic-bezier(.2,.8,.2,1), background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease; display: inline-flex; align-items: center; gap: 8px; position: relative; }
+  .btn-ghost { color: var(--text-on-accent); border: 1px solid var(--border-on-accent); }
+  .btn-ghost:hover { border-color: var(--primary-on-accent); color: var(--primary-on-accent); }
+  .btn-solid { background: var(--primary); color: #fff; }
+  .btn-solid:hover { background: var(--primary-hover); box-shadow: 0 10px 26px var(--overlay-glow); }
+  .btn-ghost-light { color: var(--text-primary); border: 1px solid var(--border); }
+  .btn-ghost-light:hover { border-color: var(--primary); color: var(--primary); }
+  .magnetic { will-change: transform; }
+
+  /* ---------- HERO ---------- */
+  .hero { position: relative; background: var(--bg-accent); color: var(--text-on-accent); padding: 120px 0 100px; overflow: hidden; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; pointer-events: none; z-index: 0; }
+  .blob-1 { width: 480px; height: 480px; top: -160px; right: -100px; background: radial-gradient(circle, var(--primary), transparent 70%); animation: blobFloat1 18s ease-in-out infinite; }
+  .blob-2 { width: 380px; height: 380px; bottom: -140px; left: -80px; background: radial-gradient(circle, var(--gold-accent), transparent 70%); animation: blobFloat2 22s ease-in-out infinite; opacity: 0.35; }
+  @keyframes blobFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px, 50px) scale(1.15); } }
+  @keyframes blobFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(50px, -30px) scale(1.1); } }
+  .jaali-bg { position: absolute; inset: 0; opacity: 0.07; pointer-events: none; animation: jaaliDrift 50s linear infinite; z-index: 0; }
+  @keyframes jaaliDrift { 0% { transform: translate(0,0); } 100% { transform: translate(-60px,-60px); } }
+  .hero-inner { position: relative; z-index: 2; max-width: 680px; }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-on-accent); border: 1px solid var(--border-on-accent); padding: 7px 16px; border-radius: 100px; margin-bottom: 30px; opacity: 0; animation: fadeUp 0.7s ease forwards 0.1s; }
+
+  .hero h1 { font-size: clamp(2.5rem, 4.4vw, 3.8rem); margin-bottom: 24px; }
+  .hero h1 .word { display: inline-block; opacity: 0; transform: translateY(28px) rotate(2deg); animation: wordUp 0.7s cubic-bezier(.2,.8,.2,1) forwards; }
+  .hero h1 em { color: var(--primary-on-accent); font-style: normal; background: linear-gradient(90deg, var(--primary-on-accent), var(--gold-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  @keyframes wordUp { to { opacity: 1; transform: translateY(0) rotate(0); } }
+
+  .hero p.lead { font-size: 1.08rem; color: var(--text-on-accent-soft); max-width: 540px; margin-bottom: 40px; opacity: 0; animation: fadeUp 0.8s ease forwards 0.9s; }
+  .hero-ctas { display: flex; gap: 16px; margin-bottom: 58px; opacity: 0; animation: fadeUp 0.8s ease forwards 1.05s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .trust-row { display: flex; flex-wrap: wrap; gap: 32px; padding-top: 32px; border-top: 1px solid var(--border-on-accent); opacity: 0; animation: fadeUp 0.8s ease forwards 1.2s; }
+  .trust-item { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-on-accent-soft); }
+  .trust-item svg { width: 18px; height: 18px; stroke: var(--primary-on-accent); flex-shrink: 0; }
+
+  .scroll-cue { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 2; opacity: 0; animation: fadeUp 0.8s ease forwards 1.4s, bob 2.4s ease-in-out 1.4s infinite; }
+
+  /* ---------- HERO ORBIT PANEL ---------- */
+  .hero-orbit-panel {
+    position: absolute; top: 110px; right: 60px;
+    width: 460px; height: 460px; z-index: 1;
+    opacity: 0; animation: fadeUp 1s ease forwards 0.6s;
+  }
+  #rippleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .orbit-ring {
+    position: absolute; inset: 0; z-index: 2;
+    animation: orbitSpin 44s linear infinite;
+  }
+  @keyframes orbitSpin { to { transform: rotate(360deg); } }
+
+  .orbit-avatar {
+    position: absolute; top: 50%; left: 50%; width: 74px; height: 74px;
+    margin: -37px 0 0 -37px;
+  }
+  .orbit-avatar-spin {
+    width: 100%; height: 100%;
+    animation: orbitCounterSpin 44s linear infinite;
+  }
+  @keyframes orbitCounterSpin { to { transform: rotate(-360deg); } }
+
+  .orbit-avatar-inner {
+    width: 100%; height: 100%; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.15rem; color: #fff;
+    border: 2px solid rgba(255,255,255,0.35);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  .orbit-avatar-label {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 8px;
+    white-space: nowrap; font-size: 0.68rem; font-weight: 600; color: var(--text-on-accent-soft);
+    background: rgba(0,0,0,0.35); padding: 2px 9px; border-radius: 100px; backdrop-filter: blur(4px);
+  }
+  .orbit-center-badge {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 3;
+    width: 118px; height: 118px; border-radius: 50%;
+    background: color-mix(in srgb, var(--bg-accent) 55%, transparent);
+    backdrop-filter: blur(6px); border: 1px solid var(--border-on-accent);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 10px;
+  }
+  .orbit-center-badge .num { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--text-on-accent); line-height: 1; }
+  .orbit-center-badge .label { font-size: 0.62rem; color: var(--text-on-accent-soft); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  @media (max-width: 1180px) {
+    .hero-orbit-panel { display: none; }
+  }
+  .scroll-cue svg { width: 20px; height: 20px; stroke: var(--text-on-accent-soft); }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+  /* ---------- SECTION SHARED ---------- */
+  section.pad { padding: 100px 0; }
+  .section-head { max-width: 620px; margin-bottom: 60px; }
+  .section-eyebrow { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; display: block; }
+  .section-head h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); color: var(--text-primary); margin-bottom: 16px; }
+  .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+  .section-head p { color: var(--text-secondary); }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.2,.8,.2,1), transform 0.7s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .stagger.in > * { opacity: 1; transform: translateY(0); }
+  .stagger > * { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .stagger > *:nth-child(1) { transition-delay: 0.05s; }
+  .stagger > *:nth-child(2) { transition-delay: 0.15s; }
+  .stagger > *:nth-child(3) { transition-delay: 0.25s; }
+  .stagger > *:nth-child(4) { transition-delay: 0.35s; }
+  .stagger > *:nth-child(5) { transition-delay: 0.45s; }
+  .stagger > *:nth-child(6) { transition-delay: 0.55s; }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .step { position: relative; padding-top: 8px; transition: transform 0.35s ease; }
+  .step:hover { transform: translateY(-6px); }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 2.6rem; color: var(--primary); opacity: 0.28; margin-bottom: 10px; font-weight: 700; }
+  .step h3 { font-size: 1.2rem; margin-bottom: 10px; color: var(--text-primary); }
+  .step-icon { width: 46px; height: 46px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 10%, transparent); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; transition: transform 0.35s ease, background 0.35s ease; }
+  .step:hover .step-icon { transform: rotate(-8deg) scale(1.08); background: color-mix(in srgb, var(--primary) 18%, transparent); }
+  .step-icon svg { width: 22px; height: 22px; stroke: var(--primary); }
+
+  /* ---------- WHY / FEATURES ---------- */
+  .features-band { background: var(--bg-accent); color: var(--text-on-accent); }
+  .features-band .section-eyebrow { color: var(--primary-on-accent); }
+  .features-band .section-head h2 { color: var(--text-on-accent); }
+  .features-band .section-head p { color: var(--text-on-accent-soft); }
+  .feat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border-on-accent); border: 1px solid var(--border-on-accent); border-radius: 16px; overflow: hidden; }
+  .feat-card { background: var(--bg-accent); padding: 34px 28px; transition: background 0.3s ease, transform 0.3s ease; }
+  .feat-card:hover { background: var(--bg-accent-2); transform: translateY(-4px); }
+  .feat-card svg { width: 26px; height: 26px; stroke: var(--primary-on-accent); margin-bottom: 18px; transition: transform 0.3s ease; }
+  .feat-card:hover svg { transform: scale(1.15) rotate(-6deg); }
+  .feat-card h4 { font-size: 1.02rem; margin-bottom: 10px; color: var(--text-on-accent); font-weight: 600; font-family: 'DM Sans'; }
+  .feat-card p { font-size: 0.88rem; color: var(--text-on-accent-soft); }
+
+  /* ---------- PRICING (3D tilt) ---------- */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: stretch; perspective: 1200px; }
+  .price-card { border: 1px solid var(--border); border-radius: 18px; padding: 38px 32px; display: flex; flex-direction: column; background: var(--bg-surface); transition: transform 0.15s ease-out, box-shadow 0.3s ease, background 0.3s ease; transform-style: preserve-3d; will-change: transform; }
+  .price-card:hover { box-shadow: var(--shadow-card); }
+  .price-card.featured { background: var(--bg-accent); color: var(--text-on-accent); border-color: var(--bg-accent); position: relative; }
+  .price-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--gold-accent); color: var(--bg-accent); font-size: 0.72rem; font-weight: 700; padding: 5px 16px; border-radius: 100px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .price-tier { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; }
+  .price-card.featured .price-tier { color: var(--primary-on-accent); }
+  .price-amount { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 6px; color: var(--text-primary); }
+  .price-card.featured .price-amount { color: var(--text-on-accent); }
+  .price-cycle { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 26px; }
+  .price-card.featured .price-cycle { color: var(--text-on-accent-soft); }
+  .price-list { margin-bottom: 30px; flex-grow: 1; }
+  .price-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; padding: 8px 0; color: var(--text-secondary); }
+  .price-card.featured .price-list li { color: var(--text-on-accent-soft); }
+  .price-list li svg { width: 16px; height: 16px; stroke: var(--primary); flex-shrink: 0; margin-top: 3px; }
+  .price-card.featured .price-list li svg { stroke: var(--primary-on-accent); }
+  .price-cta { width: 100%; justify-content: center; }
+
+  /* ---------- CHROMA GRID (vanilla JS port of ReactBits ChromaGrid) ---------- */
+  .chroma-grid { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; --x: 50%; --y: 50%; --r: 260px; }
+  .chroma-card {
+    position: relative; border-radius: 18px; overflow: hidden; padding: 30px;
+    border: 1px solid transparent; background: var(--card-gradient, var(--bg-surface));
+    transition: border-color 0.3s ease, transform 0.3s ease;
+    --mx: 50%; --my: 50%;
+  }
+  .chroma-card:hover { border-color: var(--card-color); transform: translateY(-4px); }
+  .chroma-card::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 0.4s ease;
+    background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,0.16), transparent 65%);
+  }
+  .chroma-card:hover::before { opacity: 1; }
+  .chroma-overlay {
+    position: absolute; inset: 0; pointer-events: none; z-index: 5; opacity: 0; transition: opacity 0.5s ease;
+    backdrop-filter: grayscale(1) brightness(0.82); -webkit-backdrop-filter: grayscale(1) brightness(0.82);
+    mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0%, transparent 20%, rgba(0,0,0,0.5) 55%, white 100%);
+    -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0%, transparent 20%, rgba(0,0,0,0.5) 55%, white 100%);
+  }
+  .chroma-grid.hovering .chroma-overlay { opacity: 1; }
+  .testi-quote { position: relative; z-index: 2; font-size: 0.95rem; color: var(--text-on-accent); margin-bottom: 22px; font-style: italic; }
+  .testi-person { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; }
+  .testi-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(0,0,0,0.25); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.95rem; border: 1px solid var(--card-color); }
+  .testi-name { font-size: 0.88rem; font-weight: 600; color: var(--text-on-accent); }
+  .testi-loc { font-size: 0.78rem; color: var(--text-on-accent-soft); }
+  .testi-note { text-align: center; font-size: 0.8rem; color: var(--text-secondary); margin-top: 36px; font-style: italic; }
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band { background: linear-gradient(135deg, var(--bg-accent), var(--bg-accent-2)); color: var(--text-on-accent); text-align: center; padding: 90px 0; position: relative; overflow: hidden; }
+  .cta-band h2 { font-size: clamp(1.8rem, 3.2vw, 2.6rem); margin-bottom: 18px; color: var(--text-on-accent); }
+  .cta-band p { color: var(--text-on-accent-soft); max-width: 480px; margin: 0 auto 34px; }
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; }
+
+  /* ---------- FOOTER ---------- */
+  footer { background: var(--bg-accent); color: var(--text-on-accent-soft); padding: 70px 0 30px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 50px; }
+  .footer-brand .logo { margin-bottom: 16px; }
+  .footer-brand p { font-size: 0.88rem; max-width: 280px; color: var(--text-on-accent-soft); }
+  .footer-col h5 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-on-accent); margin-bottom: 18px; }
+  .footer-col ul li { margin-bottom: 12px; }
+  .footer-col a { font-size: 0.88rem; color: var(--text-on-accent-soft); transition: color 0.25s ease; }
+  .footer-col a:hover { color: var(--primary-on-accent); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 28px; border-top: 1px solid var(--border-on-accent); font-size: 0.8rem; color: var(--text-on-accent-soft); flex-wrap: wrap; gap: 12px; }
+  .social-row { display: flex; gap: 14px; }
+  .social-row a { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-on-accent); display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
+  .social-row a:hover { border-color: var(--primary-on-accent); background: color-mix(in srgb, var(--primary) 12%, transparent); transform: translateY(-3px); }
+  .social-row svg { width: 15px; height: 15px; stroke: var(--text-on-accent-soft); }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .steps, .feat-grid, .pricing-grid, .chroma-grid { grid-template-columns: 1fr; }
+    .feat-grid { border-radius: 12px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 90px 0 90px; }
+    section.pad { padding: 70px 0; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 20px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+    .hero-ctas, .cta-buttons { flex-direction: column; }
+    .nav-right { gap: 8px; }
+  }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+
+  .user-menu { position: relative; }
+  .user-chip { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 100px; border: 1px solid var(--border-on-accent); }
+  .user-chip-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; overflow: hidden; }
+  .user-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-chip span:not(.user-chip-avatar) { font-size: .84rem; color: var(--text-on-accent); font-weight: 600; }
+
+  .user-menu > div[id] { display: none; }
+  .user-menu > div[id].dropdown-open { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .user-menu:hover > div[id] { display: block; }
+  }
+
+  /* ---------- PRELOADER ---------- */
+  #preloader {
+    position: fixed; inset: 0; z-index: 9999; background: var(--bg-accent);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    transition: opacity 0.65s cubic-bezier(.4,0,.2,1), visibility 0.65s;
+  }
+  #preloader.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+  body.preloading { overflow: hidden; }
+
+  .pre-jaali { position: absolute; inset: 0; opacity: 0.08; animation: jaaliDrift 40s linear infinite; }
+  .pre-blob { position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(80px); opacity: 0.4; background: radial-gradient(circle, var(--primary), transparent 70%); animation: prePulse 2.4s ease-in-out infinite; }
+  @keyframes prePulse { 0%,100% { transform: scale(1); opacity: 0.32; } 50% { transform: scale(1.25); opacity: 0.48; } }
+
+  .pre-mark { position: relative; z-index: 1; width: 56px; height: 56px; margin-bottom: 22px; }
+  .pre-mark svg { width: 100%; height: 100%; }
+  .pre-mark path {
+    fill: none; stroke: var(--primary-on-accent); stroke-width: 1.4;
+    stroke-dasharray: 90; stroke-dashoffset: 90;
+    animation: preDraw 1.1s cubic-bezier(.4,0,.2,1) forwards 0.15s;
+  }
+  @keyframes preDraw { to { stroke-dashoffset: 0; } }
+
+  .pre-word { position: relative; z-index: 1; display: flex; overflow: hidden; margin-bottom: 22px; }
+  .pre-word span {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--text-on-accent);
+    opacity: 0; transform: translateY(100%); display: inline-block;
+    animation: preLetterUp 0.55s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes preLetterUp { to { opacity: 1; transform: translateY(0); } }
+
+  .pre-bar { position: relative; z-index: 1; width: 140px; height: 2px; background: var(--border-on-accent); border-radius: 2px; overflow: hidden; }
+  .pre-bar::after {
+    content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--primary-on-accent), transparent);
+    animation: preBarSweep 1.3s ease-in-out infinite;
+  }
+  @keyframes preBarSweep { to { left: 100%; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #preloader { transition: none; }
+  }
+
+</style>
+</head>
+<body class="preloading">
+<div id="preloader">
+  <svg class="pre-jaali" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="preJaaliPattern" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#preJaaliPattern)"/>
+  </svg>
+  <div class="pre-blob"></div>
+  <div class="pre-mark">
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+  </div>
+  <div class="pre-word" id="preWord"></div>
+  <div class="pre-bar"></div>
+</div>
+
+<header>
+  <nav>
+    <a href="#" class="logo">
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--primary-on-accent)"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span data-en>RishtaElite</span><span data-ur class="urdu">رشتہ ایلیٹ</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how" data-en>How It Works</a><a href="#how" data-ur class="urdu">طریقہ کار</a></li>
+      <li><a href="#why" data-en>Why Us</a><a href="#why" data-ur class="urdu">کیوں ہم</a></li>
+      <li><a href="#pricing" data-en>Membership</a><a href="#pricing" data-ur class="urdu">رکنیت</a></li>
+      <li><a href="contact.html" data-en>Contact</a><a href="contact.html" data-ur class="urdu">رابطہ</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="btn-ur" onclick="setLang('ur')">UR</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <div id="guestButtons" style="display:flex;align-items:center;gap:14px;">
+        <a href="login.html" class="btn btn-ghost magnetic"><span data-en>Log In</span><span data-ur class="urdu">لاگ ان</span></a>
+        <a href="register.html" class="btn btn-solid magnetic"><span data-en>Join Free</span><span data-ur class="urdu">مفت شامل ہوں</span></a>
+      </div>
+      <div id="authChip" class="user-menu" style="display:none;">
+        <button class="user-chip" onclick="toggleDropdown('authDropdown')">
+          <span class="user-chip-avatar" id="chipAvatar">?</span>
+          <span id="chipName">—</span>
+        </button>
+        <div id="authDropdown" style="position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-card);overflow:hidden;min-width:190px;z-index:50;">
+          <a href="profiles.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Browse Profiles</a>
+          <a href="messages.html" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Messages <span id="navMsgBadge" style="display:none;background:var(--primary);color:#fff;font-size:.68rem;font-weight:700;min-width:18px;height:18px;border-radius:100px;align-items:center;justify-content:center;padding:0 5px;margin-left:8px;">0</span></a>
+          <a href="profile-viewers.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Profile Viewers</a>
+          <a href="profiles.html?openPhoto=1" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Change Profile Picture</a>
+          <a href="contact.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Get Help</a>
+          <a href="Admin.html" id="navAdminLink" style="display:none;padding:12px 16px;font-size:.86rem;color:var(--primary);font-weight:600;border-bottom:1px solid var(--border);">Admin Panel</a>
+          <button onclick="handleNavLogout()" style="width:100%;padding:12px 16px;text-align:left;font-size:.86rem;color:var(--text-primary);">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="hero" id="heroSection">
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <svg class="jaali-bg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="jaali" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/>
+        <circle cx="30" cy="30" r="6" fill="none" stroke="#F0954F" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#jaali)"/>
+  </svg>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <span class="eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span data-en>Verified profiles, family-guided matches</span>
+        <span data-ur class="urdu">تصدیق شدہ پروفائلز، خاندان کی رہنمائی میں رشتے</span>
+      </span>
+      <h1 id="heroHeadline" data-en>A rishta process your <em>whole family</em> can trust</h1>
+      <h1 data-ur class="urdu" style="display:none">ایک رشتہ عمل جس پر آپ کا <em>پورا خاندان</em> بھروسہ کر سکے</h1>
+      <p class="lead" data-en>RishtaElite connects Pakistani families in Pakistan and abroad through verified profiles, privacy controls you manage, and a process built around family involvement — not swiping.</p>
+      <p class="lead urdu" data-ur style="display:none">رشتہ ایلیٹ پاکستان اور بیرون ملک مقیم پاکستانی خاندانوں کو تصدیق شدہ پروفائلز اور آپ کے کنٹرول میں پرائیویسی کے ذریعے جوڑتا ہے۔</p>
+      <div class="hero-ctas">
+        <a href="register.html" class="btn btn-solid magnetic"><span data-en>Create Free Profile</span><span data-ur class="urdu">مفت پروفائل بنائیں</span></a>
+        <a href="#how" class="btn btn-ghost magnetic"><span data-en>See How It Works</span><span data-ur class="urdu">طریقہ کار دیکھیں</span></a>
+      </div>
+      <div class="trust-row">
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span data-en>ID-verified members</span><span class="urdu" data-ur style="display:none">تصدیق شدہ ممبران</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span data-en>You control who sees your profile</span><span class="urdu" data-ur style="display:none">آپ طے کرتے ہیں کہ آپ کی پروفائل کون دیکھے</span></div>
+        <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span data-en>Pakistan &amp; global diaspora</span><span class="urdu" data-ur style="display:none">پاکستان اور بیرون ملک مقیم پاکستانی</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-orbit-panel" id="heroOrbitPanel">
+    <canvas id="rippleCanvas"></canvas>
+    <div class="orbit-ring" id="orbitRing"></div>
+    <div class="orbit-center-badge">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--primary-on-accent);margin-bottom:6px;"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span class="label">Verified Members</span>
+    </div>
+  </div>
+  <div class="scroll-cue"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14m0 0l-6-6m6 6l6-6"/></svg></div>
+</section>
+
+<section class="pad" id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow" data-en>The Process</span><span class="section-eyebrow urdu" data-ur style="display:none">طریقہ کار</span>
+      <h2 data-en>Three steps, guided at every stage</h2><h2 class="urdu" data-ur style="display:none">تین مراحل، ہر قدم پر رہنمائی کے ساتھ</h2>
+      <p data-en>No endless swiping. Every step is designed to involve the people whose opinion actually matters to you.</p><p class="urdu" data-ur style="display:none">لامتناہی سوائپنگ نہیں۔ ہر قدم ان لوگوں کو شامل کرنے کے لیے بنایا گیا ہے جن کی رائے واقعی آپ کے لیے اہم ہے۔</p>
+    </div>
+    <div class="steps stagger reveal">
+      <div class="step">
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
+        <div class="step-num">01</div>
+        <h3 data-en>Build a verified profile</h3><h3 class="urdu" data-ur style="display:none">تصدیق شدہ پروفائل بنائیں</h3>
+        <p data-en>Add your details, family background, and preferences. Our team verifies each profile before it goes live — no fake accounts.</p><p class="urdu" data-ur style="display:none">اپنی تفصیلات، خاندانی پس منظر اور ترجیحات شامل کریں۔ ہماری ٹیم ہر پروفائل کو لائیو ہونے سے پہلے تصدیق کرتی ہے — کوئی جعلی اکاؤنٹ نہیں۔</p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg></div>
+        <div class="step-num">02</div>
+        <h3 data-en>Review curated matches</h3><h3 class="urdu" data-ur style="display:none">منتخب رشتے دیکھیں</h3>
+        <p data-en>We surface compatible profiles based on the criteria you and your family set — city, sect, education, and more.</p><p class="urdu" data-ur style="display:none">ہم آپ اور آپ کے خاندان کی مقرر کردہ شرائط کی بنیاد پر موزوں پروفائلز دکھاتے ہیں — شہر، فرقہ، تعلیم، اور مزید۔</p>
+      </div>
+      <div class="step">
+        <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.97-4.03 9-9 9a9 9 0 01-9-9 9 9 0 019-9c4.97 0 9 4.03 9 9z"/></svg></div>
+        <div class="step-num">03</div>
+        <h3 data-en>Connect, at your pace</h3><h3 class="urdu" data-ur style="display:none">اپنی رفتار سے رابطہ کریں</h3>
+        <p data-en>Message directly or loop in family members. You decide when — and if — contact details are shared.</p><p class="urdu" data-ur style="display:none">براہ راست پیغام بھیجیں یا خاندان کے افراد کو شامل کریں۔ آپ فیصلہ کرتے ہیں کہ رابطے کی تفصیلات کب — اور اگر — شیئر کی جائیں۔</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-band" id="why">
+  <div class="wrap pad">
+    <div class="section-head reveal">
+      <span class="section-eyebrow" data-en>Why RishtaElite</span><span class="section-eyebrow urdu" data-ur style="display:none">رشتہ ایلیٹ کیوں</span>
+      <h2 data-en>Built around privacy and family, not likes</h2><h2 class="urdu" data-ur style="display:none">پرائیویسی اور خاندان کے گرد بنایا گیا، لائکس کے گرد نہیں</h2>
+    </div>
+    <div class="feat-grid stagger reveal">
+      <div class="feat-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        <h4 data-en>Photo &amp; contact privacy</h4><h4 class="urdu" data-ur style="display:none">تصویر اور رابطہ پرائیویسی</h4>
+        <p data-en>Blur your photo until you approve a match. Share contact details only when you're ready.</p><p class="urdu" data-ur style="display:none">جب تک آپ رشتہ منظور نہ کریں اپنی تصویر دھندلی رکھیں۔ رابطے کی تفصیلات صرف تیار ہونے پر شیئر کریں۔</p>
+      </div>
+      <div class="feat-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <h4 data-en>Manual profile verification</h4><h4 class="urdu" data-ur style="display:none">دستی پروفائل تصدیق</h4>
+        <p data-en>A real person reviews every new profile before it's visible to the community.</p><p class="urdu" data-ur style="display:none">ہر نئی پروفائل کمیونٹی کو نظر آنے سے پہلے ایک حقیقی شخص کے ذریعے جانچی جاتی ہے۔</p>
+      </div>
+      <div class="feat-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <h4 data-en>Family co-access</h4><h4 class="urdu" data-ur style="display:none">خاندانی مشترکہ رسائی</h4>
+        <p data-en>Invite a parent or sibling as a co-manager on your profile if that's how your family prefers to search.</p><p class="urdu" data-ur style="display:none">اگر آپ کا خاندان اس طرح تلاش کرنا پسند کرتا ہے تو والدین یا بہن بھائی کو اپنی پروفائل کے مشترکہ منتظم کے طور پر مدعو کریں۔</p>
+      </div>
+      <div class="feat-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <h4 data-en>Built for the diaspora</h4><h4 class="urdu" data-ur style="display:none">بیرون ملک مقیم پاکستانیوں کے لیے بنایا گیا</h4>
+        <p data-en>Search by country, and filter for relocation preferences on both sides.</p><p class="urdu" data-ur style="display:none">ملک کے لحاظ سے تلاش کریں، اور دونوں طرف کی نقل مکانی کی ترجیحات کو فلٹر کریں۔</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pad" id="pricing">
+  <div class="wrap">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <span class="section-eyebrow" data-en>Membership</span><span class="section-eyebrow urdu" data-ur style="display:none">رکنیت</span>
+      <h2 data-en>Choose how involved you want to be</h2><h2 class="urdu" data-ur style="display:none">منتخب کریں کہ آپ کتنا شامل ہونا چاہتے ہیں</h2>
+      <p data-en>Start free. Upgrade only when you're ready to connect.</p><p class="urdu" data-ur style="display:none">مفت شروع کریں۔ صرف اس وقت اپ گریڈ کریں جب آپ رابطہ کرنے کے لیے تیار ہوں۔</p>
+    </div>
+    <div class="pricing-grid stagger reveal">
+      <div class="price-card" data-tilt>
+        <div class="price-tier" data-en>Basic</div><div class="price-tier urdu" data-ur style="display:none">بنیادی</div>
+        <div class="price-amount">Free</div>
+        <div class="price-cycle" data-en>Always</div><div class="price-cycle urdu" data-ur style="display:none">ہمیشہ</div>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Create &amp; browse profiles</span><span class="urdu" data-ur style="display:none">پروفائلز بنائیں اور دیکھیں</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>5 profile views per day</span><span class="urdu" data-ur style="display:none">روزانہ 5 پروفائل ملاحظے</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Basic search filters</span><span class="urdu" data-ur style="display:none">بنیادی تلاش فلٹرز</span></li>
+        </ul>
+        <a href="register.html" class="btn btn-ghost-light price-cta"><span data-en>Get Started</span><span class="urdu" data-ur style="display:none">شروع کریں</span></a>
+      </div>
+      <div class="price-card featured" data-tilt>
+        <div class="price-badge" data-en>Most Chosen</div><div class="price-badge urdu" data-ur style="display:none">سب سے زیادہ منتخب</div>
+        <div class="price-tier" data-en>Premium</div><div class="price-tier urdu" data-ur style="display:none">پریمیم</div>
+        <div class="price-amount">PKR 2,500</div>
+        <div class="price-cycle" data-en>per month</div><div class="price-cycle urdu" data-ur style="display:none">فی مہینہ</div>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Everything in Basic</span><span class="urdu" data-ur style="display:none">بنیادی کی تمام خصوصیات</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Unlimited profile views</span><span class="urdu" data-ur style="display:none">لامحدود پروفائل ملاحظے</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Direct messaging</span><span class="urdu" data-ur style="display:none">براہ راست پیغام رسانی</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Advanced filters (sect, city, education)</span><span class="urdu" data-ur style="display:none">جدید فلٹرز (فرقہ، شہر، تعلیم)</span></li>
+        </ul>
+        <a href="register.html" class="btn btn-solid price-cta"><span data-en>Choose Premium</span><span class="urdu" data-ur style="display:none">پریمیم منتخب کریں</span></a>
+      </div>
+      <div class="price-card" data-tilt>
+        <div class="price-tier" data-en>VIP</div><div class="price-tier urdu" data-ur style="display:none">وی آئی پی</div>
+        <div class="price-amount">PKR 6,000</div>
+        <div class="price-cycle" data-en>per month</div><div class="price-cycle urdu" data-ur style="display:none">فی مہینہ</div>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Everything in Premium</span><span class="urdu" data-ur style="display:none">پریمیم کی تمام خصوصیات</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Dedicated matchmaking consultant</span><span class="urdu" data-ur style="display:none">مخصوص رشتہ مشیر</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Priority profile placement</span><span class="urdu" data-ur style="display:none">ترجیحی پروفائل نمائش</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span data-en>Family consultation call</span><span class="urdu" data-ur style="display:none">خاندانی مشاورتی کال</span></li>
+        </ul>
+        <a href="register.html" class="btn btn-ghost-light price-cta"><span data-en>Choose VIP</span><span class="urdu" data-ur style="display:none">وی آئی پی منتخب کریں</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features-band pad">
+  <div class="wrap">
+    <div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
+      <span class="section-eyebrow" data-en>Success Stories</span><span class="section-eyebrow urdu" data-ur style="display:none">کامیابی کی کہانیاں</span>
+      <h2 data-en>Families who found their match</h2><h2 class="urdu" data-ur style="display:none">وہ خاندان جنہیں رشتہ ملا</h2>
+      <p data-en style="color:var(--text-on-accent-soft)">Move your cursor over the grid.</p><p class="urdu" style="color:var(--text-on-accent-soft)" data-ur style="display:none">گرڈ پر اپنا کرسر حرکت دیں۔</p>
+    </div>
+    <div class="chroma-grid reveal" id="chromaGrid">
+      <article class="chroma-card" style="--card-color:#C4602A; --card-gradient: linear-gradient(150deg, #C4602A, var(--bg-accent-2));">
+        <p class="testi-quote" data-en>"My parents were skeptical about an online platform, but the verification process and privacy controls put them at ease. We found our daughter's rishta within four months."</p><p class="testi-quote urdu" data-ur style="display:none">"میرے والدین ایک آن لائن پلیٹ فارم کے بارے میں شکوک رکھتے تھے، لیکن تصدیقی عمل اور پرائیویسی کنٹرولز نے انہیں مطمئن کر دیا۔ ہمیں چار مہینوں میں اپنی بیٹی کا رشتہ مل گیا۔"</p>
+        <div class="testi-person"><div class="testi-avatar">A.R.</div><div><div class="testi-name">A. Rehman</div><div class="testi-loc" data-en>Lahore, Pakistan</div><div class="testi-loc urdu" data-ur style="display:none">لاہور، پاکستان</div></div></div>
+      </article>
+      <article class="chroma-card" style="--card-color:#B8933F; --card-gradient: linear-gradient(150deg, #B8933F, var(--bg-accent-2));">
+        <p class="testi-quote" data-en>"Being based in London, I needed a platform that understood the diaspora experience. Filtering by relocation preference saved us so much back and forth."</p><p class="testi-quote urdu" data-ur style="display:none">"لندن میں مقیم ہونے کی وجہ سے مجھے ایک ایسے پلیٹ فارم کی ضرورت تھی جو بیرون ملک مقیم پاکستانیوں کے تجربے کو سمجھے۔ نقل مکانی کی ترجیح کے مطابق فلٹر کرنے سے ہمارا کافی وقت بچ گیا۔"</p>
+        <div class="testi-person"><div class="testi-avatar">S.K.</div><div><div class="testi-name">S. Khan</div><div class="testi-loc" data-en>London, UK</div><div class="testi-loc urdu" data-ur style="display:none">لندن، یوکے</div></div></div>
+      </article>
+      <article class="chroma-card" style="--card-color:#8C4A2F; --card-gradient: linear-gradient(150deg, #8C4A2F, var(--bg-accent-2));">
+        <p class="testi-quote" data-en>"My mother co-managed my profile with me, which made the whole process feel like something we were doing together, not something I was hiding from her."</p><p class="testi-quote urdu" data-ur style="display:none">"میری والدہ نے میرے ساتھ مل کر میری پروفائل کا انتظام کیا، جس سے پورا عمل ایسا محسوس ہوا جیسے ہم مل کر کر رہے ہیں، نہ کہ کچھ ایسا جو میں ان سے چھپا رہی ہوں۔"</p>
+        <div class="testi-person"><div class="testi-avatar">F.M.</div><div><div class="testi-name">F. Malik</div><div class="testi-loc" data-en>Karachi, Pakistan</div><div class="testi-loc urdu" data-ur style="display:none">کراچی، پاکستان</div></div></div>
+      </article>
+      <div class="chroma-overlay"></div>
+    </div>
+    <p class="testi-note" data-en style="color:var(--text-on-accent-soft)">Illustrative examples based on common feedback themes. Real member stories will replace these as they're shared with consent.</p><p class="testi-note urdu" style="color:var(--text-on-accent-soft)" data-ur style="display:none">یہ مثالیں عام آراء کے موضوعات پر مبنی ہیں۔ اصل ممبران کی کہانیاں رضامندی سے شیئر ہونے پر ان کی جگہ لیں گی۔</p>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2 data-en>Ready to begin the search, the right way?</h2><h2 class="urdu" data-ur style="display:none">صحیح طریقے سے تلاش شروع کرنے کے لیے تیار ہیں؟</h2>
+    <p data-en>Create your free profile today. No credit card required, no pressure — just a better starting point.</p><p class="urdu" data-ur style="display:none">آج ہی اپنی مفت پروفائل بنائیں۔ کوئی کریڈٹ کارڈ درکار نہیں، کوئی دباؤ نہیں — بس ایک بہتر آغاز۔</p>
+    <div class="cta-buttons">
+      <a href="register.html" class="btn btn-solid magnetic"><span data-en>Create Free Profile</span><span class="urdu" data-ur style="display:none">مفت پروفائل بنائیں</span></a>
+      <a href="login.html" class="btn btn-ghost magnetic"><span data-en>I Already Have an Account</span><span class="urdu" data-ur style="display:none">میرا اکاؤنٹ پہلے سے ہے</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--primary-on-accent)"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+          RishtaElite
+        </a>
+        <p data-en>A privacy-first matrimonial platform built for Pakistani families, at home and abroad.</p><p class="urdu" data-ur style="display:none">پاکستانی خاندانوں کے لیے، وطن اور بیرون ملک، پرائیویسی کو ترجیح دینے والا ایک میٹریمونیل پلیٹ فارم۔</p>
+      </div>
+      <div class="footer-col">
+        <h5 data-en>Platform</h5><h5 class="urdu" data-ur style="display:none">پلیٹ فارم</h5>
+        <ul><li><a href="#how" data-en>How It Works</a></li><li><a href="#pricing" data-en>Membership</a><a class="urdu" href="#pricing" data-ur style="display:none">رکنیت</a></li><li><a href="register.html" data-en>Join Free</a><a class="urdu" href="register.html" data-ur style="display:none">مفت شامل ہوں</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-en>Company</h5><h5 class="urdu" data-ur style="display:none">کمپنی</h5>
+        <ul><li><a href="contact.html" data-en>Contact Us</a><a class="urdu" href="contact.html" data-ur style="display:none">ہم سے رابطہ کریں</a></li><li><a href="#" data-en>Privacy Policy</a><a class="urdu" href="#" data-ur style="display:none">پرائیویسی پالیسی</a></li><li><a href="#" data-en>Terms of Service</a><a class="urdu" href="#" data-ur style="display:none">شرائط و ضوابط</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-en>Get In Touch</h5><h5 class="urdu" data-ur style="display:none">رابطہ کریں</h5>
+        <ul><li><a href="mailto:hello@rishtaelite.com">hello@rishtaelite.com</a></li><li><a href="tel:+924211234567">+92 42 1123 4567</a></li></ul>
+        <div class="social-row" style="margin-top:16px;">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-en>&copy; 2026 RishtaElite. All rights reserved.</span><span class="urdu" data-ur style="display:none">© 2026 رشتہ ایلیٹ۔ جملہ حقوق محفوظ ہیں۔</span>
+      <span data-en>Made with care in Lahore, Pakistan.</span><span class="urdu" data-ur style="display:none">لاہور، پاکستان میں توجہ سے تیار کیا گیا۔</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- Hero orbit avatars (colored initials, matches site's existing palette) ---------- */
+  (function buildOrbit() {
+    const ring = document.getElementById('orbitRing');
+    if (!ring) return;
+    const ORBIT_COLORS = ['#C4602A', '#B8933F', '#8C4A2F', '#D97B3F', '#6E4A2F', '#A3672E'];
+    const people = [
+      { initials: 'A.R.', label: 'Lahore' },
+      { initials: 'S.K.', label: 'London' },
+      { initials: 'F.M.', label: 'Karachi' },
+      { initials: 'H.A.', label: 'Toronto' },
+      { initials: 'M.B.', label: 'Dubai' },
+      { initials: 'Z.N.', label: 'Islamabad' },
+      { initials: 'R.T.', label: 'New York' },
+      { initials: 'K.J.', label: 'Karachi' },
+    ];
+    const radius = 195;
+    const count = people.length;
+
+    people.forEach((p, i) => {
+      const angle = (360 / count) * i;
+      const rad = angle * (Math.PI / 180);
+      const x = radius * Math.sin(rad);
+      const y = -radius * Math.cos(rad);
+
+      const item = document.createElement('div');
+      item.className = 'orbit-avatar';
+      item.style.transform = `translate(${x}px, ${y}px)`;
+      item.innerHTML = `
+        <div class="orbit-avatar-spin">
+          <div class="orbit-avatar-inner" style="background:${ORBIT_COLORS[i % ORBIT_COLORS.length]};">${p.initials}</div>
+          <div class="orbit-avatar-label">${p.label}</div>
+        </div>`;
+      ring.appendChild(item);
+    });
+  })();
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains("dropdown-open");
+    document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    if (!isOpen) el.classList.add("dropdown-open");
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".user-menu")) {
+      document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    }
+  });
+
+  /* ================= CONFIG ================= */
+  const SUPABASE_URL = 'https://xwjozvmmrqpbrbjktsdb.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_kHXOkFUWgHhniSemWwvlxg_FsCUGoiL';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /* ============================================ */
+
+  /* ---------- Auth-aware nav: swap Login/Join for profile chip if logged in ---------- */
+  (async function initAuthNav() {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return; // stays logged-out, guest buttons remain as-is
+
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      const { data: profile } = await supabaseClient.from('profiles')
+        .select('first_name, is_admin, photo_path').eq('id', user.id).single();
+
+      const firstName = profile?.first_name || user.email.split('@')[0];
+      document.getElementById('guestButtons').style.display = 'none';
+      document.getElementById('authChip').style.display = 'block';
+      document.getElementById('chipName').textContent = firstName;
+      document.getElementById('chipAvatar').textContent = firstName[0]?.toUpperCase() || '?';
+
+      if (profile?.is_admin === true) {
+        document.getElementById('navAdminLink').style.display = 'block';
+      }
+
+      // Your own photo shows to you unblurred — blur is a privacy measure
+      // against other members, not against yourself.
+      if (profile?.photo_path) {
+        const { data: signed } = await supabaseClient.storage.from('profile-photos')
+          .createSignedUrl(profile.photo_path, 3600);
+        if (signed?.signedUrl) {
+          document.getElementById('chipAvatar').innerHTML = `<img src="${signed.signedUrl}" alt="">`;
+        }
+      }
+
+      const { count: pendingCount } = await supabaseClient
+        .from('connection_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', user.id).eq('status', 'pending');
+
+      const { data: myConnections } = await supabaseClient
+        .from('connection_requests')
+        .select('id')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+      const connIds = (myConnections || []).map(c => c.id);
+      let unreadMsgCount = 0;
+      if (connIds.length) {
+        const { count } = await supabaseClient
+          .from('messages').select('id', { count: 'exact', head: true })
+          .in('connection_id', connIds).is('read_at', null).neq('sender_id', user.id);
+        unreadMsgCount = count || 0;
+      }
+
+      const totalUnread = (pendingCount || 0) + unreadMsgCount;
+      const badge = document.getElementById('navMsgBadge');
+      if (badge && totalUnread) {
+        badge.textContent = totalUnread;
+        badge.style.display = 'inline-flex';
+      }
+    } catch (e) {
+      console.error('initAuthNav failed:', e);
+      // Guest buttons stay visible on failure — never block the marketing page.
+    }
+  })();
+
+  async function handleNavLogout() {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  }
+
+  /* ---------- Preloader ---------- */
+  (function preloader() {
+    const word = 'RishtaElite';
+    const wordEl = document.getElementById('preWord');
+    let delay = 0.1;
+    word.split('').forEach(ch => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.animationDelay = delay + 's';
+      wordEl.appendChild(span);
+      delay += 0.045;
+    });
+
+    const MIN_DISPLAY_MS = 1500;
+    const start = Date.now();
+    function hide() {
+      const elapsed = Date.now() - start;
+      const wait = Math.max(0, MIN_DISPLAY_MS - elapsed);
+      setTimeout(() => {
+        const pre = document.getElementById('preloader');
+        pre.classList.add('fade-out');
+        document.body.classList.remove('preloading');
+        setTimeout(() => pre.remove(), 700);
+      }, wait);
+    }
+    if (document.readyState === 'complete') hide();
+    else window.addEventListener('load', hide);
+  })();
+
+  /* ---------- Theme toggle ---------- */
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('rishtaelite-theme'); } catch (e) {}
+    document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  })();
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('rishtaelite-theme', next); } catch (e) {}
+  }
+
+  /* ---------- Language toggle ---------- */
+  function setLang(lang) {
+    document.body.classList.toggle('lang-ur', lang === 'ur');
+    document.getElementById('btn-en')?.classList.toggle('active', lang === 'en');
+    document.getElementById('btn-ur')?.classList.toggle('active', lang === 'ur');
+
+    // Only hide an English element if a real Urdu replacement sits directly
+    // next to it in the DOM. Anything without a translated partner stays
+    // visible in English instead of vanishing — this is what was causing
+    // content to disappear and break layouts when switching to Urdu.
+    document.querySelectorAll('[data-en]').forEach(en => {
+      let ur = en.nextElementSibling;
+      if (!(ur && ur.hasAttribute('data-ur'))) {
+        ur = en.previousElementSibling;
+        if (!(ur && ur.hasAttribute('data-ur'))) ur = null;
+      }
+      if (ur) {
+        en.style.display = lang === 'ur' ? 'none' : '';
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      } else {
+        en.style.display = '';
+      }
+    });
+
+    // Catch any data-ur element that never got paired above (defensive).
+    document.querySelectorAll('[data-ur]').forEach(ur => {
+      let en = ur.previousElementSibling;
+      if (!(en && en.hasAttribute('data-en'))) {
+        en = ur.nextElementSibling;
+        if (!(en && en.hasAttribute('data-en'))) en = null;
+      }
+      if (!en) {
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      }
+    });
+  }
+
+  /* ---------- Hero headline word-stagger split ---------- */
+  (function splitHeadline() {
+    const el = document.getElementById('heroHeadline');
+    const html = el.innerHTML;
+    const parts = html.split(/(<em>.*?<\/em>)/g);
+    let delay = 0.25, out = '';
+    parts.forEach(part => {
+      if (part.startsWith('<em>')) {
+        const inner = part.replace(/<\/?em>/g, '');
+        inner.split(' ').forEach(w => {
+          out += `<em class="word" style="animation-delay:${delay}s">${w}&nbsp;</em>`;
+          delay += 0.09;
+        });
+      } else {
+        part.split(' ').filter(Boolean).forEach(w => {
+          out += `<span class="word" style="animation-delay:${delay}s">${w}&nbsp;</span>`;
+          delay += 0.09;
+        });
+      }
+    });
+    el.innerHTML = out;
+  })();
+
+  /* ---------- Scroll reveal (with stagger support) ---------- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ---------- Hero cursor glow (smoothed with rAF lerp) ---------- */
+  (function heroGlow() {
+    const hero = document.getElementById('heroSection');
+    const glow = document.getElementById('cursorGlow');
+    if (!hero || !glow) return;
+    let tx = 0, ty = 0, cx = 0, cy = 0, active = false;
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      tx = e.clientX - r.left; ty = e.clientY - r.top;
+      if (!active) { cx = tx; cy = ty; active = true; glow.style.opacity = 1; }
+    });
+    hero.addEventListener('mouseleave', () => { glow.style.opacity = 0; active = false; });
+    function loop() {
+      cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
+      glow.style.left = cx + 'px'; glow.style.top = cy + 'px';
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
+
+  /* ---------- Magnetic buttons ---------- */
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2;
+      const y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+  });
+
+  /* ---------- Pricing card 3D tilt ---------- */
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(1200px) rotateY(${px * 8}deg) rotateX(${-py * 8}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1200px) rotateY(0) rotateX(0) translateY(0)'; });
+  });
+
+  /* ---------- ChromaGrid (vanilla JS port: cursor spotlight + per-card highlight) ---------- */
+  (function chromaGrid() {
+    const grid = document.getElementById('chromaGrid');
+    if (!grid) return;
+    grid.addEventListener('mousemove', e => {
+      const r = grid.getBoundingClientRect();
+      grid.style.setProperty('--x', (e.clientX - r.left) + 'px');
+      grid.style.setProperty('--y', (e.clientY - r.top) + 'px');
+      grid.classList.add('hovering');
+    });
+    grid.addEventListener('mouseleave', () => grid.classList.remove('hovering'));
+    grid.querySelectorAll('.chroma-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+  })();
+</script>
+
+<script type="module">
+  /* ---------- Hero background: RippleGrid, ported from React to vanilla JS ----------
+     Original component used React + the 'ogl' WebGL micro-library. ogl itself isn't
+     React-specific, so this uses it directly with plain JS — no React needed, keeping
+     the site's vanilla stack intact. Colors recolored from the original white/rainbow
+     defaults to the site's terracotta palette. Fails silently (canvas just stays empty,
+     orbit avatars + ambient blob glow still show) if WebGL isn't available. */
+  (async function initRippleGrid() {
+    const canvas = document.getElementById('rippleCanvas');
+    const panel = document.getElementById('heroOrbitPanel');
+    if (!canvas || !panel) return;
+
+    let ogl;
+    try {
+      ogl = await import('https://cdn.jsdelivr.net/npm/ogl@1.0.11/src/index.js');
+    } catch (e) {
+      console.error('RippleGrid: could not load ogl, skipping WebGL background', e);
+      return;
+    }
+    const { Renderer, Program, Triangle, Mesh } = ogl;
+
+    const hexToRgb = hex => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255]
+        : [1, 1, 1];
+    };
+
+    let renderer, gl;
+    try {
+      renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), alpha: true, canvas });
+      gl = renderer.gl;
+    } catch (e) {
+      console.error('RippleGrid: WebGL init failed, skipping background', e);
+      return;
+    }
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    const vert = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() {
+    vUv = position * 0.5 + 0.5;
+    gl_Position = vec4(position, 0.0, 1.0);
+}`;
+
+    const frag = `precision highp float;
+uniform float iTime;
+uniform vec2 iResolution;
+uniform vec3 gridColor;
+uniform float rippleIntensity;
+uniform float gridSize;
+uniform float gridThickness;
+uniform float fadeDistance;
+uniform float vignetteStrength;
+uniform float glowIntensity;
+uniform float opacity;
+uniform bool mouseInteraction;
+uniform vec2 mousePosition;
+uniform float mouseInfluence;
+uniform float mouseInteractionRadius;
+varying vec2 vUv;
+float pi = 3.141592;
+void main() {
+    vec2 uv = vUv * 2.0 - 1.0;
+    uv.x *= iResolution.x / iResolution.y;
+    float dist = length(uv);
+    float func = sin(pi * (iTime - dist));
+    vec2 rippleUv = uv + uv * func * rippleIntensity;
+    if (mouseInteraction && mouseInfluence > 0.0) {
+        vec2 mouseUv = (mousePosition * 2.0 - 1.0);
+        mouseUv.x *= iResolution.x / iResolution.y;
+        float mouseDist = length(uv - mouseUv);
+        float influence = mouseInfluence * exp(-mouseDist * mouseDist / (mouseInteractionRadius * mouseInteractionRadius));
+        float mouseWave = sin(pi * (iTime * 2.0 - mouseDist * 3.0)) * influence;
+        rippleUv += normalize(uv - mouseUv) * mouseWave * rippleIntensity * 0.3;
+    }
+    vec2 a = sin(gridSize * 0.5 * pi * rippleUv - pi / 2.0);
+    vec2 b = abs(a);
+    float aaWidth = 0.5;
+    vec2 smoothB = vec2(smoothstep(0.0, aaWidth, b.x), smoothstep(0.0, aaWidth, b.y));
+    vec3 color = vec3(0.0);
+    color += exp(-gridThickness * smoothB.x * (0.8 + 0.5 * sin(pi * iTime)));
+    color += exp(-gridThickness * smoothB.y);
+    color += 0.5 * exp(-(gridThickness / 4.0) * sin(smoothB.x));
+    color += 0.5 * exp(-(gridThickness / 3.0) * smoothB.y);
+    if (glowIntensity > 0.0) {
+        color += glowIntensity * exp(-gridThickness * 0.5 * smoothB.x);
+        color += glowIntensity * exp(-gridThickness * 0.5 * smoothB.y);
+    }
+    float ddd = exp(-2.0 * clamp(pow(dist, fadeDistance), 0.0, 1.0));
+    vec2 vignetteCoords = vUv - 0.5;
+    float vignetteDistance = length(vignetteCoords);
+    float vignette = 1.0 - pow(vignetteDistance * 2.0, vignetteStrength);
+    vignette = clamp(vignette, 0.0, 1.0);
+    float finalFade = ddd * vignette;
+    float alpha = length(color) * finalFade * opacity;
+    gl_FragColor = vec4(color * gridColor * finalFade * opacity, alpha);
+}`;
+
+    // Recolored from the original demo: muted amber/terracotta instead of white,
+    // lower opacity + thinner glow so it sits behind the orbiting avatars rather
+    // than competing with them.
+    const uniforms = {
+      iTime: { value: 0 },
+      iResolution: { value: [1, 1] },
+      gridColor: { value: hexToRgb('#F0954F') },
+      rippleIntensity: { value: 0.04 },
+      gridSize: { value: 7.0 },
+      gridThickness: { value: 22.0 },
+      fadeDistance: { value: 1.4 },
+      vignetteStrength: { value: 2.2 },
+      glowIntensity: { value: 0.08 },
+      opacity: { value: 0.35 },
+      mouseInteraction: { value: true },
+      mousePosition: { value: [0.5, 0.5] },
+      mouseInfluence: { value: 0 },
+      mouseInteractionRadius: { value: 0.9 }
+    };
+
+    const geometry = new Triangle(gl);
+    const program = new Program(gl, { vertex: vert, fragment: frag, uniforms });
+    const mesh = new Mesh(gl, { geometry, program });
+
+    const targetMouse = { x: 0.5, y: 0.5 };
+    const currentMouse = { x: 0.5, y: 0.5 };
+    let mouseInfluenceTarget = 0;
+
+    function resize() {
+      const w = panel.clientWidth, h = panel.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h);
+      uniforms.iResolution.value = [w, h];
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    panel.addEventListener('mousemove', e => {
+      const r = panel.getBoundingClientRect();
+      targetMouse.x = (e.clientX - r.left) / r.width;
+      targetMouse.y = 1.0 - (e.clientY - r.top) / r.height;
+    });
+    panel.addEventListener('mouseenter', () => { mouseInfluenceTarget = 1.0; });
+    panel.addEventListener('mouseleave', () => { mouseInfluenceTarget = 0.0; });
+
+    function render(t) {
+      uniforms.iTime.value = t * 0.001;
+      currentMouse.x += (targetMouse.x - currentMouse.x) * 0.1;
+      currentMouse.y += (targetMouse.y - currentMouse.y) * 0.1;
+      uniforms.mousePosition.value = [currentMouse.x, currentMouse.y];
+      uniforms.mouseInfluence.value += (mouseInfluenceTarget - uniforms.mouseInfluence.value) * 0.05;
+      renderer.render({ scene: mesh });
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  })();
+</script>
+
+</body>
+</html>

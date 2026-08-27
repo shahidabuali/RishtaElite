@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — RishtaElite</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-page: #FBF6EF; --bg-surface: #FFFFFF; --bg-surface-hover: #F7EDE1;
+    --bg-accent: #15120F; --bg-accent-2: #241C15;
+    --text-primary: #1C1815; --text-secondary: #6E6259;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #C4602A; --primary-hover: #A34E20;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #B8933F;
+    --border: rgba(28,24,21,0.09); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(28,24,21,0.13);
+    --overlay-glow: rgba(196,96,42,0.32);
+    --danger: #C0392B; --danger-bg: rgba(192,57,43,0.08);
+    --success: #4C8B5A; --success-bg: rgba(76,139,90,0.08);
+  }
+  [data-theme="dark"] {
+    --bg-page: #0D0B09; --bg-surface: #19140F; --bg-surface-hover: #221A13;
+    --bg-accent: #1B1611; --bg-accent-2: #271E16;
+    --text-primary: #F3ECE2; --text-secondary: #B7A99A;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #E8823D; --primary-hover: #F0A164;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #D9B667;
+    --border: rgba(243,236,226,0.10); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(0,0,0,0.55);
+    --overlay-glow: rgba(232,130,61,0.30);
+    --danger: #E8746A; --danger-bg: rgba(232,116,106,0.12);
+    --success: #7FC28E; --success-bg: rgba(127,194,142,0.12);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;transition:background .4s ease,color .4s ease;}
+  h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600;line-height:1.2;}
+  p{line-height:1.7;color:var(--text-secondary);}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  .urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;}
+  [data-ur]{display:none;}
+  body.lang-ur [data-en]{display:none;}
+  body.lang-ur [data-ur]{display:inline;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+
+  header{position:sticky;top:0;z-index:100;background:color-mix(in srgb, var(--bg-accent) 90%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-on-accent);}
+  nav{max-width:1180px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text-on-accent);letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+  .logo-mark{width:22px;height:22px;flex-shrink:0;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .lang-toggle{display:flex;border:1px solid var(--border-on-accent);border-radius:100px;padding:3px;}
+  .lang-toggle button{padding:5px 13px;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--text-on-accent-soft);transition:all .25s ease;}
+  .lang-toggle button.active{background:var(--primary);color:#fff;}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-on-accent);display:flex;align-items:center;justify-content:center;transition:all .25s ease;position:relative;}
+  .theme-toggle:hover{border-color:var(--primary-on-accent);transform:rotate(20deg);}
+  .theme-toggle svg{width:17px;height:17px;stroke:var(--text-on-accent-soft);transition:opacity .25s ease,transform .4s ease;position:absolute;}
+  .theme-toggle .icon-sun{opacity:0;transform:rotate(-90deg) scale(.5);}
+  .theme-toggle .icon-moon{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-sun{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-moon{opacity:0;transform:rotate(90deg) scale(.5);}
+  .btn{padding:13px 24px;border-radius:8px;font-size:.9rem;font-weight:600;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .25s ease,box-shadow .25s ease,color .25s ease,border-color .25s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-ghost{color:var(--text-on-accent);border:1px solid var(--border-on-accent);}
+  .btn-ghost:hover{border-color:var(--primary-on-accent);color:var(--primary-on-accent);}
+  .btn-solid{background:var(--primary);color:#fff;width:100%;}
+  .btn-solid:hover:not(:disabled){background:var(--primary-hover);box-shadow:0 10px 26px var(--overlay-glow);}
+  .btn-solid:disabled{opacity:.55;cursor:not-allowed;}
+  .magnetic{will-change:transform;}
+
+  /* ---------- AUTH LAYOUT ---------- */
+  .auth-shell{position:relative;min-height:calc(100vh - 71px);display:flex;align-items:center;justify-content:center;padding:60px 20px;overflow:hidden;background:var(--bg-accent);}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;pointer-events:none;z-index:0;}
+  .blob-1{width:480px;height:480px;top:-160px;right:-100px;background:radial-gradient(circle,var(--primary),transparent 70%);animation:blobFloat1 18s ease-in-out infinite;}
+  .blob-2{width:380px;height:380px;bottom:-140px;left:-80px;background:radial-gradient(circle,var(--gold-accent),transparent 70%);animation:blobFloat2 22s ease-in-out infinite;opacity:.32;}
+  @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,50px) scale(1.15);}}
+  @keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(50px,-30px) scale(1.1);}}
+  .jaali-bg{position:absolute;inset:0;opacity:.06;pointer-events:none;animation:jaaliDrift 50s linear infinite;z-index:0;}
+  @keyframes jaaliDrift{0%{transform:translate(0,0);}100%{transform:translate(-60px,-60px);}}
+
+  .auth-card{position:relative;z-index:2;width:100%;max-width:440px;background:var(--bg-surface);border-radius:20px;padding:44px 40px;box-shadow:var(--shadow-card);opacity:0;transform:translateY(24px);animation:cardIn .7s cubic-bezier(.2,.8,.2,1) forwards .15s;}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+  .auth-eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;display:block;}
+  .auth-card h1{font-size:1.7rem;margin-bottom:8px;color:var(--text-primary);}
+  .auth-sub{font-size:.9rem;color:var(--text-secondary);margin-bottom:30px;}
+
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:.82rem;font-weight:600;color:var(--text-primary);margin-bottom:7px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .input-wrap{position:relative;}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=tel],select{
+    width:100%;padding:12px 14px;border-radius:9px;border:1px solid var(--border);background:var(--bg-page);
+    color:var(--text-primary);font-family:inherit;font-size:.92rem;transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--overlay-glow);}
+  input::placeholder{color:var(--text-secondary);opacity:.7;}
+  .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--text-secondary);}
+  .field-error{font-size:.78rem;color:var(--danger);margin-top:6px;display:none;}
+  .field.invalid input{border-color:var(--danger);}
+  .field.invalid .field-error{display:block;}
+  .field-hint{font-size:.76rem;color:var(--text-secondary);margin-top:6px;}
+
+  .checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;}
+  .checkbox-row input{margin-top:3px;accent-color:var(--primary);}
+  .checkbox-row label{font-size:.82rem;color:var(--text-secondary);}
+  .checkbox-row a{color:var(--primary);font-weight:600;}
+
+  .alert{padding:12px 14px;border-radius:9px;font-size:.84rem;margin-bottom:18px;display:none;align-items:flex-start;gap:10px;opacity:0;transform:translateY(-6px);transition:opacity .3s ease,transform .3s ease;}
+  .alert.show{display:flex;opacity:1;transform:translateY(0);}
+  .alert-error{background:var(--danger-bg);color:var(--danger);}
+  .alert-success{background:var(--success-bg);color:var(--success);}
+  .alert svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+  .spinner.show{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .auth-switch{text-align:center;font-size:.86rem;color:var(--text-secondary);margin-top:26px;}
+  .auth-switch a{color:var(--primary);font-weight:700;}
+  .auth-switch a:hover{text-decoration:underline;}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text-secondary);font-size:.78rem;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .forgot-link{display:block;text-align:right;font-size:.8rem;color:var(--primary);font-weight:600;margin-top:-8px;margin-bottom:18px;}
+
+  /* ---------- OTP STEP ---------- */
+  .step{display:none;}
+  .step.active{display:block;animation:stepIn .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes stepIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+  .otp-target{font-weight:700;color:var(--text-primary);}
+  .otp-boxes{display:flex;gap:10px;justify-content:space-between;margin-bottom:22px;}
+  .otp-boxes input{width:48px;height:56px;text-align:center;font-size:1.3rem;font-weight:700;padding:0;}
+  .otp-timer{text-align:center;font-size:.82rem;color:var(--text-secondary);margin-bottom:8px;}
+  .otp-timer button{color:var(--primary);font-weight:700;}
+  .otp-timer button:disabled{color:var(--text-secondary);cursor:not-allowed;}
+
+  .success-check{width:64px;height:64px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+  .success-check svg{width:30px;height:30px;stroke:var(--success);stroke-width:2.5;}
+  .success-check svg path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s ease forwards .2s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  @media (max-width:520px){
+    .field-row{grid-template-columns:1fr;}
+    .auth-card{padding:34px 24px;}
+    .otp-boxes input{width:100%;height:52px;}
+  }
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+
+  .user-menu { position: relative; }
+  .user-chip { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 100px; border: 1px solid var(--border-on-accent); }
+  .user-chip-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; overflow: hidden; }
+  .user-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-chip span:not(.user-chip-avatar) { font-size: .84rem; color: var(--text-on-accent); font-weight: 600; }
+
+  .user-menu > div[id] { display: none; }
+  .user-menu > div[id].dropdown-open { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .user-menu:hover > div[id] { display: block; }
+  }
+
+  .admin-hero { background: var(--bg-accent); color: var(--text-on-accent); padding: 44px 0 36px; }
+  .admin-hero h1 { font-size: clamp(1.6rem, 2.6vw, 2rem); margin-bottom: 6px; }
+  .admin-hero p { color: var(--text-on-accent-soft); }
+
+  .admin-body { padding: 40px 0 90px; }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 36px; }
+  .stat-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+  .stat-label { font-size: .78rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+  .stat-value { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: var(--text-primary); }
+  .stat-card.accent .stat-value { color: var(--primary); }
+
+  .table-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+  .table-toolbar input, .table-toolbar select { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-primary); font-family: inherit; font-size: .86rem; }
+  .table-toolbar input { flex: 1; min-width: 200px; }
+
+  .admin-table-wrap { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  table.admin-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  table.admin-table th { text-align: left; padding: 14px 18px; background: var(--bg-page); color: var(--text-secondary); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid var(--border); }
+  table.admin-table td { padding: 14px 18px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
+  table.admin-table tr:last-child td { border-bottom: none; }
+  table.admin-table tr:hover td { background: var(--bg-surface-hover); }
+
+  .row-avatar { display: flex; align-items: center; gap: 10px; }
+  .row-avatar-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .74rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; }
+  .status-pill.verified { background: var(--success-bg); color: var(--success); }
+  .status-pill.pending { background: color-mix(in srgb, var(--gold-accent) 15%, transparent); color: var(--gold-accent); }
+
+  .row-actions { display: flex; gap: 8px; }
+  .row-btn { padding: 6px 12px; border-radius: 7px; font-size: .78rem; font-weight: 600; border: 1px solid var(--border); transition: all .2s ease; }
+  .row-btn.verify { color: var(--success); border-color: var(--success); }
+  .row-btn.verify:hover { background: var(--success-bg); }
+  .row-btn.unverify { color: var(--text-secondary); }
+  .row-btn.unverify:hover { border-color: var(--text-secondary); }
+  .row-btn.delete { color: var(--danger); border-color: var(--danger); }
+  .row-btn.delete:hover { background: var(--danger-bg); }
+
+  .admin-empty { text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: .9rem; }
+
+  .denied-shell { min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; }
+  .denied-shell svg { width: 48px; height: 48px; stroke: var(--danger); margin: 0 auto 18px; }
+
+  @media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2,1fr); } .admin-table-wrap { overflow-x: auto; } table.admin-table { min-width: 720px; } }
+
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--primary-on-accent)"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span>RishtaElite</span>
+      <span style="font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--primary-on-accent);border:1px solid var(--border-on-accent);padding:2px 8px;border-radius:100px;margin-left:6px;">Admin</span>
+    </a>
+    <div class="nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <div class="user-menu">
+        <button class="user-chip" onclick="toggleDropdown('adminDropdown')">
+          <span class="user-chip-avatar" id="adminChipAvatar">?</span>
+          <span id="adminChipName">—</span>
+        </button>
+        <div id="adminDropdown" style="position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-card);overflow:hidden;min-width:190px;z-index:50;">
+          <a href="profiles.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Browse Profiles</a>
+          <a href="messages.html" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Messages <span id="navMsgBadge" style="display:none;background:var(--primary);color:#fff;font-size:.68rem;font-weight:700;min-width:18px;height:18px;border-radius:100px;align-items:center;justify-content:center;padding:0 5px;margin-left:8px;">0</span></a>
+          <a href="profile-viewers.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Profile Viewers</a>
+          <a href="profiles.html?openPhoto=1" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Change Profile Picture</a>
+          <a href="contact.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Get Help</a>
+          <button onclick="handleLogout()" style="width:100%;padding:12px 16px;text-align:left;font-size:.86rem;color:var(--text-primary);">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div id="appContent" style="display:none;">
+  <section class="admin-hero">
+    <div class="wrap">
+      <h1>Profile Moderation</h1>
+      <p>Review new registrations and manage the member directory.</p>
+    </div>
+  </section>
+
+  <section class="admin-body">
+    <div class="wrap">
+
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label">Total Profiles</div><div class="stat-value" id="statTotal">—</div></div>
+        <div class="stat-card accent"><div class="stat-label">Verified</div><div class="stat-value" id="statVerified">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pending Review</div><div class="stat-value" id="statPending">—</div></div>
+        <div class="stat-card"><div class="stat-label">New This Week</div><div class="stat-value" id="statNew">—</div></div>
+      </div>
+
+      <div class="table-toolbar">
+        <input type="text" id="searchInput" placeholder="Search by name or email...">
+        <select id="statusFilter">
+          <option value="">All statuses</option>
+          <option value="verified">Verified only</option>
+          <option value="pending">Pending only</option>
+        </select>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Member</th><th>Email</th><th>Gender</th><th>Location</th><th>Joined</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="admin-empty" id="tableEmpty" style="display:none;">No matching profiles.</div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<div id="deniedContent" style="display:none;">
+  <div class="denied-shell">
+    <div>
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      <h2 style="margin-bottom:10px;">Admin access required</h2>
+      <p style="max-width:400px;">This page is restricted to RishtaElite administrators. If you believe you should have access, contact the site owner.</p>
+      <a href="index.html" class="btn btn-solid" style="margin-top:20px;width:auto;display:inline-flex;">Return Home</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains("dropdown-open");
+    document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    if (!isOpen) el.classList.add("dropdown-open");
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".user-menu")) {
+      document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    }
+  });
+
+  /* ================= CONFIG ================= */
+  const SUPABASE_URL = 'https://xwjozvmmrqpbrbjktsdb.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_kHXOkFUWgHhniSemWwvlxg_FsCUGoiL';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /* ============================================ */
+
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('rishtaelite-theme'); } catch (e) {}
+    document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  })();
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('rishtaelite-theme', next); } catch (e) {}
+  }
+  async function handleLogout() {
+    await supabaseClient.auth.signOut();
+    window.location.href = 'index.html';
+  }
+
+  const CARD_COLORS = ['#C4602A', '#B8933F', '#8C4A2F', '#D97B3F', '#6E4A2F', '#A3672E'];
+  function colorFor(id) {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    return CARD_COLORS[Math.abs(hash) % CARD_COLORS.length];
+  }
+  function initials(f, l) { return ((f?.[0]||'') + (l?.[0]||'')).toUpperCase() || '?'; }
+
+  let allProfiles = [];
+  let currentUser = null;
+
+  /* ---------- Admin auth guard ---------- */
+  (async function guard() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user.app_metadata || user.app_metadata.otp_verified !== true) {
+      window.location.href = 'login.html'; return;
+    }
+
+    const { data: myProfile, error } = await supabaseClient.from('profiles').select('is_admin, first_name, photo_path').eq('id', user.id).single();
+    if (error || !myProfile || myProfile.is_admin !== true) {
+      document.getElementById('deniedContent').style.display = 'block';
+      return;
+    }
+
+    const firstName = myProfile.first_name || user.email.split('@')[0];
+    document.getElementById('adminChipName').textContent = firstName;
+    document.getElementById('adminChipAvatar').textContent = firstName[0]?.toUpperCase() || '?';
+    if (myProfile.photo_path) {
+      const { data: signed } = await supabaseClient.storage.from('profile-photos')
+        .createSignedUrl(myProfile.photo_path, 3600);
+      if (signed?.signedUrl) {
+        document.getElementById('adminChipAvatar').innerHTML = `<img src="${signed.signedUrl}" alt="">`;
+      }
+    }
+
+    document.getElementById('appContent').style.display = 'block';
+    currentUser = user;
+    loadPendingBadge();
+    loadAdminData();
+  })();
+
+  async function loadPendingBadge() {
+    const { count: pendingCount } = await supabaseClient
+      .from('connection_requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('receiver_id', currentUser.id).eq('status', 'pending');
+
+    const { data: myConnections } = await supabaseClient
+      .from('connection_requests')
+      .select('id')
+      .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+      .eq('status', 'accepted');
+    const connIds = (myConnections || []).map(c => c.id);
+    let unreadMsgCount = 0;
+    if (connIds.length) {
+      const { count } = await supabaseClient
+        .from('messages').select('id', { count: 'exact', head: true })
+        .in('connection_id', connIds).is('read_at', null).neq('sender_id', currentUser.id);
+      unreadMsgCount = count || 0;
+    }
+
+    const totalUnread = (pendingCount || 0) + unreadMsgCount;
+    const badge = document.getElementById('navMsgBadge');
+    if (badge && totalUnread) {
+      badge.textContent = totalUnread;
+      badge.style.display = 'inline-flex';
+    }
+  }
+
+  async function loadAdminData() {
+    const { data, error } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+    if (error) {
+      document.getElementById('tableEmpty').style.display = 'block';
+      document.getElementById('tableEmpty').textContent = 'Error loading profiles: ' + error.message;
+      return;
+    }
+    allProfiles = data || [];
+    renderStats();
+    renderTable();
+  }
+
+  function renderStats() {
+    const total = allProfiles.length;
+    const verified = allProfiles.filter(p => p.verified).length;
+    const pending = total - verified;
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const newThisWeek = allProfiles.filter(p => new Date(p.created_at) > weekAgo).length;
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statVerified').textContent = verified;
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statNew').textContent = newThisWeek;
+  }
+
+  function renderTable() {
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const statusFilter = document.getElementById('statusFilter').value;
+
+    let rows = allProfiles.filter(p => {
+      const matchesSearch = !search ||
+        (p.first_name + ' ' + p.last_name).toLowerCase().includes(search) ||
+        (p.email || '').toLowerCase().includes(search);
+      const matchesStatus = !statusFilter ||
+        (statusFilter === 'verified' && p.verified) ||
+        (statusFilter === 'pending' && !p.verified);
+      return matchesSearch && matchesStatus;
+    });
+
+    const tbody = document.getElementById('tableBody');
+    const empty = document.getElementById('tableEmpty');
+    tbody.innerHTML = '';
+    empty.style.display = rows.length ? 'none' : 'block';
+
+    rows.forEach(p => {
+      const tr = document.createElement('tr');
+      const joined = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+      tr.innerHTML = `
+        <td>
+          <div class="row-avatar">
+            <div class="row-avatar-circle" style="background:${colorFor(p.id)}">${initials(p.first_name, p.last_name)}</div>
+            <span>${p.first_name || ''} ${p.last_name || ''}</span>
+          </div>
+        </td>
+        <td>${p.email || '—'}</td>
+        <td style="text-transform:capitalize;">${p.gender || '—'}</td>
+        <td>${p.city || '—'}${p.country ? ', ' + p.country : ''}</td>
+        <td>${joined}</td>
+        <td>${p.verified
+          ? `<span class="status-pill verified"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Verified</span>`
+          : `<span class="status-pill pending">Pending</span>`}
+        </td>
+        <td>
+          <div class="row-actions">
+            ${p.verified
+              ? `<button class="row-btn unverify" data-id="${p.id}" data-action="unverify">Unverify</button>`
+              : `<button class="row-btn verify" data-id="${p.id}" data-action="verify">Verify</button>`}
+            <button class="row-btn delete" data-id="${p.id}" data-name="${(p.first_name||'') + ' ' + (p.last_name||'')}" data-action="delete">Delete</button>
+          </div>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('[data-action="verify"]').forEach(btn => btn.addEventListener('click', () => setVerified(btn.dataset.id, true)));
+    tbody.querySelectorAll('[data-action="unverify"]').forEach(btn => btn.addEventListener('click', () => setVerified(btn.dataset.id, false)));
+    tbody.querySelectorAll('[data-action="delete"]').forEach(btn => btn.addEventListener('click', () => deleteProfile(btn.dataset.id, btn.dataset.name)));
+  }
+
+  async function setVerified(id, value) {
+    const { error } = await supabaseClient.from('profiles').update({ verified: value }).eq('id', id);
+    if (error) { alert('Could not update: ' + error.message); return; }
+    const p = allProfiles.find(x => x.id === id);
+    if (p) p.verified = value;
+    renderStats();
+    renderTable();
+  }
+
+  async function deleteProfile(id, name) {
+    if (!confirm(`Delete ${name.trim() || 'this profile'}? This removes their profile row (not their login account) and cannot be undone.`)) return;
+    const { error } = await supabaseClient.from('profiles').delete().eq('id', id);
+    if (error) { alert('Could not delete: ' + error.message); return; }
+    allProfiles = allProfiles.filter(x => x.id !== id);
+    renderStats();
+    renderTable();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('statusFilter').addEventListener('change', renderTable);
+</script>
+</body>
+</html>

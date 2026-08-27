@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — RishtaElite</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-page: #FBF6EF; --bg-surface: #FFFFFF; --bg-surface-hover: #F7EDE1;
+    --bg-accent: #15120F; --bg-accent-2: #241C15;
+    --text-primary: #1C1815; --text-secondary: #6E6259;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #C4602A; --primary-hover: #A34E20;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #B8933F;
+    --border: rgba(28,24,21,0.09); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(28,24,21,0.13);
+    --overlay-glow: rgba(196,96,42,0.32);
+    --danger: #C0392B; --danger-bg: rgba(192,57,43,0.08);
+    --success: #4C8B5A; --success-bg: rgba(76,139,90,0.08);
+  }
+  [data-theme="dark"] {
+    --bg-page: #0D0B09; --bg-surface: #19140F; --bg-surface-hover: #221A13;
+    --bg-accent: #1B1611; --bg-accent-2: #271E16;
+    --text-primary: #F3ECE2; --text-secondary: #B7A99A;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #E8823D; --primary-hover: #F0A164;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #D9B667;
+    --border: rgba(243,236,226,0.10); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(0,0,0,0.55);
+    --overlay-glow: rgba(232,130,61,0.30);
+    --danger: #E8746A; --danger-bg: rgba(232,116,106,0.12);
+    --success: #7FC28E; --success-bg: rgba(127,194,142,0.12);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;transition:background .4s ease,color .4s ease;}
+  h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600;line-height:1.2;}
+  p{line-height:1.7;color:var(--text-secondary);}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  .urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;}
+  [data-ur]{display:none;}
+  body.lang-ur [data-en]{display:none;}
+  body.lang-ur [data-ur]{display:inline;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+
+  header{position:sticky;top:0;z-index:100;background:color-mix(in srgb, var(--bg-accent) 90%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-on-accent);}
+  nav{max-width:1180px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text-on-accent);letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+  .logo-mark{width:22px;height:22px;flex-shrink:0;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .lang-toggle{display:flex;border:1px solid var(--border-on-accent);border-radius:100px;padding:3px;}
+  .lang-toggle button{padding:5px 13px;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--text-on-accent-soft);transition:all .25s ease;}
+  .lang-toggle button.active{background:var(--primary);color:#fff;}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-on-accent);display:flex;align-items:center;justify-content:center;transition:all .25s ease;position:relative;}
+  .theme-toggle:hover{border-color:var(--primary-on-accent);transform:rotate(20deg);}
+  .theme-toggle svg{width:17px;height:17px;stroke:var(--text-on-accent-soft);transition:opacity .25s ease,transform .4s ease;position:absolute;}
+  .theme-toggle .icon-sun{opacity:0;transform:rotate(-90deg) scale(.5);}
+  .theme-toggle .icon-moon{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-sun{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-moon{opacity:0;transform:rotate(90deg) scale(.5);}
+  .btn{padding:13px 24px;border-radius:8px;font-size:.9rem;font-weight:600;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .25s ease,box-shadow .25s ease,color .25s ease,border-color .25s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-ghost{color:var(--text-on-accent);border:1px solid var(--border-on-accent);}
+  .btn-ghost:hover{border-color:var(--primary-on-accent);color:var(--primary-on-accent);}
+  .btn-solid{background:var(--primary);color:#fff;width:100%;}
+  .btn-solid:hover:not(:disabled){background:var(--primary-hover);box-shadow:0 10px 26px var(--overlay-glow);}
+  .btn-solid:disabled{opacity:.55;cursor:not-allowed;}
+  .magnetic{will-change:transform;}
+
+  /* ---------- AUTH LAYOUT ---------- */
+  .auth-shell{position:relative;min-height:calc(100vh - 71px);display:flex;align-items:center;justify-content:center;padding:60px 20px;overflow:hidden;background:var(--bg-accent);}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;pointer-events:none;z-index:0;}
+  .blob-1{width:480px;height:480px;top:-160px;right:-100px;background:radial-gradient(circle,var(--primary),transparent 70%);animation:blobFloat1 18s ease-in-out infinite;}
+  .blob-2{width:380px;height:380px;bottom:-140px;left:-80px;background:radial-gradient(circle,var(--gold-accent),transparent 70%);animation:blobFloat2 22s ease-in-out infinite;opacity:.32;}
+  @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,50px) scale(1.15);}}
+  @keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(50px,-30px) scale(1.1);}}
+  .jaali-bg{position:absolute;inset:0;opacity:.06;pointer-events:none;animation:jaaliDrift 50s linear infinite;z-index:0;}
+  @keyframes jaaliDrift{0%{transform:translate(0,0);}100%{transform:translate(-60px,-60px);}}
+
+  .auth-card{position:relative;z-index:2;width:100%;max-width:440px;background:var(--bg-surface);border-radius:20px;padding:44px 40px;box-shadow:var(--shadow-card);opacity:0;transform:translateY(24px);animation:cardIn .7s cubic-bezier(.2,.8,.2,1) forwards .15s;}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+  .auth-eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;display:block;}
+  .auth-card h1{font-size:1.7rem;margin-bottom:8px;color:var(--text-primary);}
+  .auth-sub{font-size:.9rem;color:var(--text-secondary);margin-bottom:30px;}
+
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:.82rem;font-weight:600;color:var(--text-primary);margin-bottom:7px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .input-wrap{position:relative;}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=tel],select{
+    width:100%;padding:12px 14px;border-radius:9px;border:1px solid var(--border);background:var(--bg-page);
+    color:var(--text-primary);font-family:inherit;font-size:.92rem;transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--overlay-glow);}
+  input::placeholder{color:var(--text-secondary);opacity:.7;}
+  .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--text-secondary);}
+  .field-error{font-size:.78rem;color:var(--danger);margin-top:6px;display:none;}
+  .field.invalid input{border-color:var(--danger);}
+  .field.invalid .field-error{display:block;}
+  .field-hint{font-size:.76rem;color:var(--text-secondary);margin-top:6px;}
+
+  .checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;}
+  .checkbox-row input{margin-top:3px;accent-color:var(--primary);}
+  .checkbox-row label{font-size:.82rem;color:var(--text-secondary);}
+  .checkbox-row a{color:var(--primary);font-weight:600;}
+
+  .alert{padding:12px 14px;border-radius:9px;font-size:.84rem;margin-bottom:18px;display:none;align-items:flex-start;gap:10px;opacity:0;transform:translateY(-6px);transition:opacity .3s ease,transform .3s ease;}
+  .alert.show{display:flex;opacity:1;transform:translateY(0);}
+  .alert-error{background:var(--danger-bg);color:var(--danger);}
+  .alert-success{background:var(--success-bg);color:var(--success);}
+  .alert svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+  .spinner.show{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .auth-switch{text-align:center;font-size:.86rem;color:var(--text-secondary);margin-top:26px;}
+  .auth-switch a{color:var(--primary);font-weight:700;}
+  .auth-switch a:hover{text-decoration:underline;}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text-secondary);font-size:.78rem;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .forgot-link{display:block;text-align:right;font-size:.8rem;color:var(--primary);font-weight:600;margin-top:-8px;margin-bottom:18px;}
+
+  /* ---------- OTP STEP ---------- */
+  .step{display:none;}
+  .step.active{display:block;animation:stepIn .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes stepIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+  .otp-target{font-weight:700;color:var(--text-primary);}
+  .otp-boxes{display:flex;gap:10px;justify-content:space-between;margin-bottom:22px;}
+  .otp-boxes input{width:48px;height:56px;text-align:center;font-size:1.3rem;font-weight:700;padding:0;}
+  .otp-timer{text-align:center;font-size:.82rem;color:var(--text-secondary);margin-bottom:8px;}
+  .otp-timer button{color:var(--primary);font-weight:700;}
+  .otp-timer button:disabled{color:var(--text-secondary);cursor:not-allowed;}
+
+  .success-check{width:64px;height:64px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+  .success-check svg{width:30px;height:30px;stroke:var(--success);stroke-width:2.5;}
+  .success-check svg path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s ease forwards .2s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  @media (max-width:520px){
+    .field-row{grid-template-columns:1fr;}
+    .auth-card{padding:34px 24px;}
+    .otp-boxes input{width:100%;height:52px;}
+  }
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+
+  .user-menu { position: relative; }
+  .user-chip { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 100px; border: 1px solid var(--border-on-accent); }
+  .user-chip-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; overflow: hidden; }
+  .user-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-chip span:not(.user-chip-avatar) { font-size: .84rem; color: var(--text-on-accent); font-weight: 600; }
+
+  .user-menu > div[id] { display: none; }
+  .user-menu > div[id].dropdown-open { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .user-menu:hover > div[id] { display: block; }
+  }
+
+  .contact-hero { position: relative; background: var(--bg-accent); color: var(--text-on-accent); padding: 90px 0 80px; overflow: hidden; text-align: center; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .45; pointer-events: none; z-index: 0; }
+  .blob-1 { width: 480px; height: 480px; top: -160px; right: -100px; background: radial-gradient(circle, var(--primary), transparent 70%); animation: blobFloat1 18s ease-in-out infinite; }
+  .blob-2 { width: 380px; height: 380px; bottom: -140px; left: -80px; background: radial-gradient(circle, var(--gold-accent), transparent 70%); animation: blobFloat2 22s ease-in-out infinite; opacity: .32; }
+  @keyframes blobFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,50px) scale(1.15); } }
+  @keyframes blobFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(50px,-30px) scale(1.1); } }
+  .jaali-bg { position: absolute; inset: 0; opacity: .06; pointer-events: none; animation: jaaliDrift 50s linear infinite; z-index: 0; }
+  .contact-hero .wrap { position: relative; z-index: 2; }
+  .contact-eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--primary-on-accent); margin-bottom: 14px; display: block; }
+  .contact-hero h1 { font-size: clamp(2.1rem, 3.6vw, 3rem); margin-bottom: 16px; }
+  .contact-hero p { color: var(--text-on-accent-soft); max-width: 520px; margin: 0 auto; }
+
+  .contact-body { padding: 80px 0; }
+  .contact-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: start; }
+  .contact-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-card); }
+  .contact-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: var(--text-primary); }
+  .contact-card .auth-sub { margin-bottom: 26px; }
+
+  .info-list { display: flex; flex-direction: column; gap: 24px; }
+  .info-item { display: flex; gap: 16px; align-items: flex-start; }
+  .info-icon { width: 42px; height: 42px; border-radius: 12px; background: color-mix(in srgb, var(--primary) 10%, transparent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .info-icon svg { width: 20px; height: 20px; stroke: var(--primary); }
+  .info-item h4 { font-size: .96rem; color: var(--text-primary); margin-bottom: 4px; font-family: 'DM Sans'; font-weight: 600; }
+  .info-item p { font-size: .88rem; margin: 0; }
+  .info-item a { color: var(--primary); font-weight: 600; }
+
+  .social-row-lg { display: flex; gap: 14px; margin-top: 30px; }
+  .social-row-lg a { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all .25s ease; }
+  .social-row-lg a:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); transform: translateY(-3px); }
+  .social-row-lg svg { width: 17px; height: 17px; stroke: var(--text-secondary); }
+
+  .faq-note { background: var(--bg-page); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-top: 30px; font-size: .86rem; color: var(--text-secondary); }
+  .faq-note strong { color: var(--text-primary); }
+
+  textarea {
+    width: 100%; padding: 12px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg-page);
+    color: var(--text-primary); font-family: inherit; font-size: .92rem; resize: vertical; min-height: 120px;
+    transition: border-color .25s ease, box-shadow .25s ease;
+  }
+  textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--overlay-glow); }
+
+  @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+
+
+  /* ---------- PRELOADER ---------- */
+  #preloader { position: fixed; inset: 0; z-index: 9999; background: var(--bg-accent); display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.65s cubic-bezier(.4,0,.2,1), visibility 0.65s; }
+  #preloader.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+  body.preloading { overflow: hidden; }
+  .pre-jaali { position: absolute; inset: 0; opacity: 0.08; animation: jaaliDrift 40s linear infinite; }
+  .pre-blob { position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(80px); opacity: 0.4; background: radial-gradient(circle, var(--primary), transparent 70%); animation: prePulse 2.4s ease-in-out infinite; }
+  @keyframes prePulse { 0%,100% { transform: scale(1); opacity: 0.32; } 50% { transform: scale(1.25); opacity: 0.48; } }
+  .pre-mark { position: relative; z-index: 1; width: 56px; height: 56px; margin-bottom: 22px; }
+  .pre-mark svg { width: 100%; height: 100%; }
+  .pre-mark path { fill: none; stroke: var(--primary-on-accent); stroke-width: 1.4; stroke-dasharray: 90; stroke-dashoffset: 90; animation: preDraw 1.1s cubic-bezier(.4,0,.2,1) forwards 0.15s; }
+  @keyframes preDraw { to { stroke-dashoffset: 0; } }
+  .pre-word { position: relative; z-index: 1; display: flex; overflow: hidden; margin-bottom: 22px; }
+  .pre-word span { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--text-on-accent); opacity: 0; transform: translateY(100%); display: inline-block; animation: preLetterUp 0.55s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes preLetterUp { to { opacity: 1; transform: translateY(0); } }
+  .pre-bar { position: relative; z-index: 1; width: 140px; height: 2px; background: var(--border-on-accent); border-radius: 2px; overflow: hidden; }
+  .pre-bar::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--primary-on-accent), transparent); animation: preBarSweep 1.3s ease-in-out infinite; }
+  @keyframes preBarSweep { to { left: 100%; } }
+</style>
+</head>
+<body class="preloading">
+<div id="preloader">
+  <svg class="pre-jaali" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="preJaaliPattern" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#preJaaliPattern)"/>
+  </svg>
+  <div class="pre-blob"></div>
+  <div class="pre-mark"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg></div>
+  <div class="pre-word" id="preWord"></div>
+  <div class="pre-bar"></div>
+</div>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--primary-on-accent)"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span data-en>RishtaElite</span><span data-ur class="urdu">رشتہ ایلیٹ</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="btn-ur" onclick="setLang('ur')">UR</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <div id="guestButtons" style="display:flex;align-items:center;gap:14px;">
+        <a href="login.html" class="btn btn-ghost magnetic"><span data-en>Log In</span><span data-ur class="urdu">لاگ ان</span></a>
+        <a href="register.html" class="btn btn-solid magnetic"><span data-en>Join Free</span><span data-ur class="urdu">مفت شامل ہوں</span></a>
+      </div>
+      <div id="authChip" class="user-menu" style="display:none;">
+        <button class="user-chip" onclick="toggleDropdown('authDropdown')">
+          <span class="user-chip-avatar" id="chipAvatar">?</span>
+          <span id="chipName">—</span>
+        </button>
+        <div id="authDropdown" style="position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-card);overflow:hidden;min-width:190px;z-index:50;">
+          <a href="profiles.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Browse Profiles</a>
+          <a href="messages.html" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Messages <span id="navMsgBadge" style="display:none;background:var(--primary);color:#fff;font-size:.68rem;font-weight:700;min-width:18px;height:18px;border-radius:100px;align-items:center;justify-content:center;padding:0 5px;margin-left:8px;">0</span></a>
+          <a href="profile-viewers.html" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Profile Viewers</a>
+          <a href="profiles.html?openPhoto=1" style="display:block;padding:12px 16px;font-size:.86rem;color:var(--text-primary);border-bottom:1px solid var(--border);">Change Profile Picture</a>
+          <a href="Admin.html" id="navAdminLink" style="display:none;padding:12px 16px;font-size:.86rem;color:var(--primary);font-weight:600;border-bottom:1px solid var(--border);">Admin Panel</a>
+          <button onclick="handleNavLogout()" style="width:100%;padding:12px 16px;text-align:left;font-size:.86rem;color:var(--text-primary);">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="contact-hero">
+  <svg class="jaali-bg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="jaali" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/><circle cx="30" cy="30" r="6" fill="none" stroke="#F0954F" stroke-width="1"/></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#jaali)"/>
+  </svg>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="wrap">
+    <span class="contact-eyebrow" data-en>Get In Touch</span><span class="contact-eyebrow urdu" data-ur style="display:none">رابطہ کریں</span>
+    <h1 data-en>We're here to help</h1><h1 class="urdu" data-ur style="display:none">ہم مدد کے لیے حاضر ہیں</h1>
+    <p data-en>Questions about membership, verification, or your profile? Reach out — a real person reads every message.</p><p class="urdu" data-ur style="display:none">رکنیت، تصدیق، یا اپنی پروفائل کے بارے میں سوالات؟ رابطہ کریں — ایک حقیقی شخص ہر پیغام پڑھتا ہے۔</p>
+  </div>
+</section>
+
+<section class="contact-body">
+  <div class="wrap">
+    <div class="contact-grid">
+
+      <div class="contact-card">
+        <h2 data-en>Send us a message</h2><h2 class="urdu" data-ur style="display:none">ہمیں پیغام بھیجیں</h2>
+        <p class="auth-sub" data-en>We typically respond within 1-2 business days.</p><p class="auth-sub urdu" data-ur style="display:none">ہم عام طور پر 1-2 کاروباری دنوں میں جواب دیتے ہیں۔</p>
+
+        <div class="alert alert-error" id="contactAlert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          <span id="contactAlertText"></span>
+        </div>
+        <div class="alert alert-success" id="contactSuccess">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          <span data-en>Message sent — we'll get back to you soon.</span><span class="urdu" data-ur style="display:none">پیغام بھیج دیا گیا — ہم جلد آپ سے رابطہ کریں گے۔</span>
+        </div>
+
+        <form id="contactForm" novalidate>
+          <div class="field-row">
+            <div class="field" id="field-contactName">
+              <label data-en>Your Name</label><label class="urdu" data-ur style="display:none">آپ کا نام</label>
+              <input type="text" id="contactName" placeholder="Ayesha Khan" required>
+              <span class="field-error">Enter your name</span>
+            </div>
+            <div class="field" id="field-contactEmail">
+              <label data-en>Email Address</label><label class="urdu" data-ur style="display:none">ای میل ایڈریس</label>
+              <input type="email" id="contactEmail" placeholder="you@example.com" required>
+              <span class="field-error">Enter a valid email</span>
+            </div>
+          </div>
+
+          <div class="field" id="field-contactSubject">
+            <label data-en>Subject</label><label class="urdu" data-ur style="display:none">موضوع</label>
+            <select id="contactSubject" required>
+              <option value="" disabled selected>Select a topic</option>
+              <option value="Membership question">Membership question</option>
+              <option value="Profile verification">Profile verification</option>
+              <option value="Privacy concern">Privacy concern</option>
+              <option value="Technical issue">Technical issue</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="field-error">Please select a topic</span>
+          </div>
+
+          <div class="field" id="field-contactMessage">
+            <label data-en>Message</label><label class="urdu" data-ur style="display:none">پیغام</label>
+            <textarea id="contactMessage" placeholder="Tell us how we can help..." required></textarea>
+            <span class="field-error">Please write a message</span>
+          </div>
+
+          <button type="submit" class="btn btn-solid" id="contactBtn">
+            <span class="spinner" id="contactSpinner"></span>
+            <span data-en id="contactBtnText">Send Message</span><span class="urdu" data-ur style="display:none">پیغام بھیجیں</span>
+          </button>
+        </form>
+      </div>
+
+      <div>
+        <div class="info-list">
+          <div class="info-item">
+            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+            <div><h4 data-en>Email</h4><h4 class="urdu" data-ur style="display:none">ای میل</h4><p><a href="mailto:hello@rishtaelite.com">hello@rishtaelite.com</a></p></div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 011 .75l1.38 5.53a1 1 0 01-.5 1.14l-2.1 1.21a11 11 0 006.29 6.29l1.21-2.1a1 1 0 011.14-.5l5.53 1.38a1 1 0 01.75 1V19a2 2 0 01-2 2h-1C9.72 21 3 14.28 3 6V5z"/></svg></div>
+            <div><h4 data-en>Phone</h4><h4 class="urdu" data-ur style="display:none">فون</h4><p><a href="tel:+924211234567">+92 42 1123 4567</a></p></div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg></div>
+            <div><h4 data-en>Office</h4><h4 class="urdu" data-ur style="display:none">دفتر</h4><p data-en>Lahore, Pakistan</p><p class="urdu" data-ur style="display:none">لاہور، پاکستان</p></div>
+          </div>
+        </div>
+
+        <div class="social-row-lg">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
+        </div>
+
+        <div class="faq-note" data-en>
+          <strong>Privacy first:</strong> messages sent here are read by our support team only. We never share your contact details with other members without your explicit consent.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-bottom" style="border-top:none;padding-top:0;">
+      <span data-en>&copy; 2026 RishtaElite. All rights reserved.</span><span class="urdu" data-ur style="display:none">© 2026 رشتہ ایلیٹ۔ جملہ حقوق محفوظ ہیں۔</span>
+      <span data-en>Made with care in Lahore, Pakistan.</span><span class="urdu" data-ur style="display:none">لاہور، پاکستان میں توجہ سے تیار کیا گیا۔</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains("dropdown-open");
+    document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    if (!isOpen) el.classList.add("dropdown-open");
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".user-menu")) {
+      document.querySelectorAll(".user-menu > div[id]").forEach(d => d.classList.remove("dropdown-open"));
+    }
+  });
+
+  /* ================= CONFIG — replace with your real EmailJS values ================= */
+  const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+  const EMAILJS_CONTACT_TEMPLATE_ID = 'YOUR_EMAILJS_CONTACT_TEMPLATE_ID';
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+  /* Contact form submissions are low-stakes — sending straight from the browser via your
+     public key is the standard, documented way to use EmailJS for this (unlike the OTP,
+     which needed the private key hidden server-side). You'll need a THIRD EmailJS template
+     for this — separate from the OTP one — with {{from_name}}, {{from_email}}, {{subject}},
+     {{message}} variables, and "To Email" set to your own inbox (not a variable this time). */
+  /* ==================================================================================== */
+
+  /* ================= SUPABASE (for auth-aware nav only) ================= */
+  const SUPABASE_URL = 'https://xwjozvmmrqpbrbjktsdb.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_kHXOkFUWgHhniSemWwvlxg_FsCUGoiL';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  (async function initAuthNav() {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
+
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      const { data: profile } = await supabaseClient.from('profiles')
+        .select('first_name, is_admin, photo_path').eq('id', user.id).single();
+
+      const firstName = profile?.first_name || user.email.split('@')[0];
+      document.getElementById('guestButtons').style.display = 'none';
+      document.getElementById('authChip').style.display = 'block';
+      document.getElementById('chipName').textContent = firstName;
+      document.getElementById('chipAvatar').textContent = firstName[0]?.toUpperCase() || '?';
+
+      if (profile?.is_admin === true) {
+        document.getElementById('navAdminLink').style.display = 'block';
+      }
+      if (profile?.photo_path) {
+        const { data: signed } = await supabaseClient.storage.from('profile-photos')
+          .createSignedUrl(profile.photo_path, 3600);
+        if (signed?.signedUrl) {
+          document.getElementById('chipAvatar').innerHTML = `<img src="${signed.signedUrl}" alt="">`;
+        }
+      }
+
+      const { count: pendingCount } = await supabaseClient
+        .from('connection_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', user.id).eq('status', 'pending');
+
+      const { data: myConnections } = await supabaseClient
+        .from('connection_requests')
+        .select('id')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+      const connIds = (myConnections || []).map(c => c.id);
+      let unreadMsgCount = 0;
+      if (connIds.length) {
+        const { count } = await supabaseClient
+          .from('messages').select('id', { count: 'exact', head: true })
+          .in('connection_id', connIds).is('read_at', null).neq('sender_id', user.id);
+        unreadMsgCount = count || 0;
+      }
+
+      const totalUnread = (pendingCount || 0) + unreadMsgCount;
+      const badge = document.getElementById('navMsgBadge');
+      if (badge && totalUnread) {
+        badge.textContent = totalUnread;
+        badge.style.display = 'inline-flex';
+      }
+    } catch (e) { console.error('initAuthNav failed:', e); }
+  })();
+
+  async function handleNavLogout() {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  }
+
+  (function preloader() {
+    const word = 'RishtaElite';
+    const wordEl = document.getElementById('preWord');
+    let delay = 0.1;
+    word.split('').forEach(ch => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.animationDelay = delay + 's';
+      wordEl.appendChild(span);
+      delay += 0.045;
+    });
+    const MIN_DISPLAY_MS = 1200;
+    const start = Date.now();
+    function hide() {
+      const elapsed = Date.now() - start;
+      const wait = Math.max(0, MIN_DISPLAY_MS - elapsed);
+      setTimeout(() => {
+        const pre = document.getElementById('preloader');
+        pre.classList.add('fade-out');
+        document.body.classList.remove('preloading');
+        setTimeout(() => pre.remove(), 700);
+      }, wait);
+    }
+    if (document.readyState === 'complete') hide();
+    else window.addEventListener('load', hide);
+  })();
+
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('rishtaelite-theme'); } catch (e) {}
+    document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  })();
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('rishtaelite-theme', next); } catch (e) {}
+  }
+  function setLang(lang) {
+    document.body.classList.toggle('lang-ur', lang === 'ur');
+    document.getElementById('btn-en')?.classList.toggle('active', lang === 'en');
+    document.getElementById('btn-ur')?.classList.toggle('active', lang === 'ur');
+
+    // Only hide an English element if a real Urdu replacement sits directly
+    // next to it in the DOM. Anything without a translated partner stays
+    // visible in English instead of vanishing — this is what was causing
+    // content to disappear and break layouts when switching to Urdu.
+    document.querySelectorAll('[data-en]').forEach(en => {
+      let ur = en.nextElementSibling;
+      if (!(ur && ur.hasAttribute('data-ur'))) {
+        ur = en.previousElementSibling;
+        if (!(ur && ur.hasAttribute('data-ur'))) ur = null;
+      }
+      if (ur) {
+        en.style.display = lang === 'ur' ? 'none' : '';
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      } else {
+        en.style.display = '';
+      }
+    });
+
+    // Catch any data-ur element that never got paired above (defensive).
+    document.querySelectorAll('[data-ur]').forEach(ur => {
+      let en = ur.previousElementSibling;
+      if (!(en && en.hasAttribute('data-en'))) {
+        en = ur.nextElementSibling;
+        if (!(en && en.hasAttribute('data-en'))) en = null;
+      }
+      if (!en) {
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      }
+    });
+  }
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+  });
+
+  function setFieldError(id, show) { document.getElementById('field-' + id).classList.toggle('invalid', show); }
+
+  const contactForm = document.getElementById('contactForm');
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    document.getElementById('contactAlert').classList.remove('show');
+    document.getElementById('contactSuccess').classList.remove('show');
+
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    let valid = true;
+    setFieldError('contactName', !name); if (!name) valid = false;
+    setFieldError('contactEmail', !emailOk); if (!emailOk) valid = false;
+    setFieldError('contactSubject', !subject); if (!subject) valid = false;
+    setFieldError('contactMessage', !message); if (!message) valid = false;
+    if (!valid) return;
+
+    const btn = document.getElementById('contactBtn');
+    const spinner = document.getElementById('contactSpinner');
+    const btnText = document.getElementById('contactBtnText');
+    btn.disabled = true; spinner.classList.add('show'); btnText.textContent = 'Sending…';
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONTACT_TEMPLATE_ID, {
+        from_name: name, from_email: email, subject, message
+      });
+      document.getElementById('contactSuccess').classList.add('show');
+      contactForm.reset();
+    } catch (err) {
+      document.getElementById('contactAlertText').textContent = 'Could not send your message. Please try again or email us directly.';
+      document.getElementById('contactAlert').classList.add('show');
+    } finally {
+      btn.disabled = false; spinner.classList.remove('show'); btnText.textContent = 'Send Message';
+    }
+  });
+</script>
+</body>
+</html>

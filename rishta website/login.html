@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In — RishtaElite</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-page: #FBF6EF; --bg-surface: #FFFFFF; --bg-surface-hover: #F7EDE1;
+    --bg-accent: #15120F; --bg-accent-2: #241C15;
+    --text-primary: #1C1815; --text-secondary: #6E6259;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #C4602A; --primary-hover: #A34E20;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #B8933F;
+    --border: rgba(28,24,21,0.09); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(28,24,21,0.13);
+    --overlay-glow: rgba(196,96,42,0.32);
+    --danger: #C0392B; --danger-bg: rgba(192,57,43,0.08);
+    --success: #4C8B5A; --success-bg: rgba(76,139,90,0.08);
+  }
+  [data-theme="dark"] {
+    --bg-page: #0D0B09; --bg-surface: #19140F; --bg-surface-hover: #221A13;
+    --bg-accent: #1B1611; --bg-accent-2: #271E16;
+    --text-primary: #F3ECE2; --text-secondary: #B7A99A;
+    --text-on-accent: #FBF6EF; --text-on-accent-soft: #D8CCBE;
+    --primary: #E8823D; --primary-hover: #F0A164;
+    --primary-on-accent: #F0954F; --primary-on-accent-hover: #F5AC71;
+    --gold-accent: #D9B667;
+    --border: rgba(243,236,226,0.10); --border-on-accent: rgba(251,246,239,0.14);
+    --shadow-card: 0 24px 55px rgba(0,0,0,0.55);
+    --overlay-glow: rgba(232,130,61,0.30);
+    --danger: #E8746A; --danger-bg: rgba(232,116,106,0.12);
+    --success: #7FC28E; --success-bg: rgba(127,194,142,0.12);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg-page);color:var(--text-primary);min-height:100vh;transition:background .4s ease,color .4s ease;}
+  h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600;line-height:1.2;}
+  p{line-height:1.7;color:var(--text-secondary);}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  .urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;}
+  [data-ur]{display:none;}
+  body.lang-ur [data-en]{display:none;}
+  body.lang-ur [data-ur]{display:inline;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+
+  header{position:sticky;top:0;z-index:100;background:color-mix(in srgb, var(--bg-accent) 90%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-on-accent);}
+  nav{max-width:1180px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--text-on-accent);letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+  .logo-mark{width:22px;height:22px;flex-shrink:0;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .lang-toggle{display:flex;border:1px solid var(--border-on-accent);border-radius:100px;padding:3px;}
+  .lang-toggle button{padding:5px 13px;border-radius:100px;font-size:.78rem;font-weight:600;color:var(--text-on-accent-soft);transition:all .25s ease;}
+  .lang-toggle button.active{background:var(--primary);color:#fff;}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-on-accent);display:flex;align-items:center;justify-content:center;transition:all .25s ease;position:relative;}
+  .theme-toggle:hover{border-color:var(--primary-on-accent);transform:rotate(20deg);}
+  .theme-toggle svg{width:17px;height:17px;stroke:var(--text-on-accent-soft);transition:opacity .25s ease,transform .4s ease;position:absolute;}
+  .theme-toggle .icon-sun{opacity:0;transform:rotate(-90deg) scale(.5);}
+  .theme-toggle .icon-moon{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-sun{opacity:1;transform:rotate(0) scale(1);}
+  [data-theme="dark"] .theme-toggle .icon-moon{opacity:0;transform:rotate(90deg) scale(.5);}
+  .btn{padding:13px 24px;border-radius:8px;font-size:.9rem;font-weight:600;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .25s ease,box-shadow .25s ease,color .25s ease,border-color .25s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-ghost{color:var(--text-on-accent);border:1px solid var(--border-on-accent);}
+  .btn-ghost:hover{border-color:var(--primary-on-accent);color:var(--primary-on-accent);}
+  .btn-solid{background:var(--primary);color:#fff;width:100%;}
+  .btn-solid:hover:not(:disabled){background:var(--primary-hover);box-shadow:0 10px 26px var(--overlay-glow);}
+  .btn-solid:disabled{opacity:.55;cursor:not-allowed;}
+  .magnetic{will-change:transform;}
+
+  /* ---------- AUTH LAYOUT ---------- */
+  .auth-shell{position:relative;min-height:calc(100vh - 71px);display:flex;align-items:center;justify-content:center;padding:60px 20px;overflow:hidden;background:var(--bg-accent);}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;pointer-events:none;z-index:0;}
+  .blob-1{width:480px;height:480px;top:-160px;right:-100px;background:radial-gradient(circle,var(--primary),transparent 70%);animation:blobFloat1 18s ease-in-out infinite;}
+  .blob-2{width:380px;height:380px;bottom:-140px;left:-80px;background:radial-gradient(circle,var(--gold-accent),transparent 70%);animation:blobFloat2 22s ease-in-out infinite;opacity:.32;}
+  @keyframes blobFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,50px) scale(1.15);}}
+  @keyframes blobFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(50px,-30px) scale(1.1);}}
+  .jaali-bg{position:absolute;inset:0;opacity:.06;pointer-events:none;animation:jaaliDrift 50s linear infinite;z-index:0;}
+  @keyframes jaaliDrift{0%{transform:translate(0,0);}100%{transform:translate(-60px,-60px);}}
+
+  .auth-card{position:relative;z-index:2;width:100%;max-width:440px;background:var(--bg-surface);border-radius:20px;padding:44px 40px;box-shadow:var(--shadow-card);opacity:0;transform:translateY(24px);animation:cardIn .7s cubic-bezier(.2,.8,.2,1) forwards .15s;}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+  .auth-eyebrow{font-size:.76rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;display:block;}
+  .auth-card h1{font-size:1.7rem;margin-bottom:8px;color:var(--text-primary);}
+  .auth-sub{font-size:.9rem;color:var(--text-secondary);margin-bottom:30px;}
+
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:.82rem;font-weight:600;color:var(--text-primary);margin-bottom:7px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .input-wrap{position:relative;}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=tel],select{
+    width:100%;padding:12px 14px;border-radius:9px;border:1px solid var(--border);background:var(--bg-page);
+    color:var(--text-primary);font-family:inherit;font-size:.92rem;transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--overlay-glow);}
+  input::placeholder{color:var(--text-secondary);opacity:.7;}
+  .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--text-secondary);}
+  .field-error{font-size:.78rem;color:var(--danger);margin-top:6px;display:none;}
+  .field.invalid input{border-color:var(--danger);}
+  .field.invalid .field-error{display:block;}
+  .field-hint{font-size:.76rem;color:var(--text-secondary);margin-top:6px;}
+
+  .checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:22px;}
+  .checkbox-row input{margin-top:3px;accent-color:var(--primary);}
+  .checkbox-row label{font-size:.82rem;color:var(--text-secondary);}
+  .checkbox-row a{color:var(--primary);font-weight:600;}
+
+  .alert{padding:12px 14px;border-radius:9px;font-size:.84rem;margin-bottom:18px;display:none;align-items:flex-start;gap:10px;opacity:0;transform:translateY(-6px);transition:opacity .3s ease,transform .3s ease;}
+  .alert.show{display:flex;opacity:1;transform:translateY(0);}
+  .alert-error{background:var(--danger-bg);color:var(--danger);}
+  .alert-success{background:var(--success-bg);color:var(--success);}
+  .alert svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+  .spinner.show{display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .auth-switch{text-align:center;font-size:.86rem;color:var(--text-secondary);margin-top:26px;}
+  .auth-switch a{color:var(--primary);font-weight:700;}
+  .auth-switch a:hover{text-decoration:underline;}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text-secondary);font-size:.78rem;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .forgot-link{display:block;text-align:right;font-size:.8rem;color:var(--primary);font-weight:600;margin-top:-8px;margin-bottom:18px;}
+  .forgot-link:hover{text-decoration:underline;}
+
+  /* ---------- OTP STEP ---------- */
+  .step{display:none;}
+  .step.active{display:block;animation:stepIn .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes stepIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+  .otp-target{font-weight:700;color:var(--text-primary);}
+  .otp-boxes{display:flex;gap:10px;justify-content:space-between;margin-bottom:22px;}
+  .otp-boxes input{width:48px;height:56px;text-align:center;font-size:1.3rem;font-weight:700;padding:0;}
+  .otp-timer{text-align:center;font-size:.82rem;color:var(--text-secondary);margin-bottom:8px;}
+  .otp-timer button{color:var(--primary);font-weight:700;}
+  .otp-timer button:disabled{color:var(--text-secondary);cursor:not-allowed;}
+
+  .success-check{width:64px;height:64px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+  .success-check svg{width:30px;height:30px;stroke:var(--success);stroke-width:2.5;}
+  .success-check svg path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s ease forwards .2s;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+
+  @media (max-width:520px){
+    .field-row{grid-template-columns:1fr;}
+    .auth-card{padding:34px 24px;}
+    .otp-boxes input{width:100%;height:52px;}
+  }
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+
+
+  /* ---------- PRELOADER ---------- */
+  #preloader {
+    position: fixed; inset: 0; z-index: 9999; background: var(--bg-accent);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    transition: opacity 0.65s cubic-bezier(.4,0,.2,1), visibility 0.65s;
+  }
+  #preloader.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+  body.preloading { overflow: hidden; }
+  .pre-jaali { position: absolute; inset: 0; opacity: 0.08; animation: jaaliDrift 40s linear infinite; }
+  @keyframes jaaliDrift { 0% { transform: translate(0,0); } 100% { transform: translate(-60px,-60px); } }
+  .pre-blob { position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(80px); opacity: 0.4; background: radial-gradient(circle, var(--primary), transparent 70%); animation: prePulse 2.4s ease-in-out infinite; }
+  @keyframes prePulse { 0%,100% { transform: scale(1); opacity: 0.32; } 50% { transform: scale(1.25); opacity: 0.48; } }
+  .pre-mark { position: relative; z-index: 1; width: 56px; height: 56px; margin-bottom: 22px; }
+  .pre-mark svg { width: 100%; height: 100%; }
+  .pre-mark path { fill: none; stroke: var(--primary-on-accent); stroke-width: 1.4; stroke-dasharray: 90; stroke-dashoffset: 90; animation: preDraw 1.1s cubic-bezier(.4,0,.2,1) forwards 0.15s; }
+  @keyframes preDraw { to { stroke-dashoffset: 0; } }
+  .pre-word { position: relative; z-index: 1; display: flex; overflow: hidden; margin-bottom: 22px; }
+  .pre-word span { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--text-on-accent); opacity: 0; transform: translateY(100%); display: inline-block; animation: preLetterUp 0.55s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes preLetterUp { to { opacity: 1; transform: translateY(0); } }
+  .pre-bar { position: relative; z-index: 1; width: 140px; height: 2px; background: var(--border-on-accent); border-radius: 2px; overflow: hidden; }
+  .pre-bar::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--primary-on-accent), transparent); animation: preBarSweep 1.3s ease-in-out infinite; }
+  @keyframes preBarSweep { to { left: 100%; } }
+  @media (prefers-reduced-motion: reduce) { #preloader { transition: none; } }
+</style>
+</head>
+<body class="preloading">
+<div id="preloader">
+  <svg class="pre-jaali" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="preJaaliPattern" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#preJaaliPattern)"/>
+  </svg>
+  <div class="pre-blob"></div>
+  <div class="pre-mark"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg></div>
+  <div class="pre-word" id="preWord"></div>
+  <div class="pre-bar"></div>
+</div>
+
+
+<header>
+  <nav>
+    <a href="index.html" class="logo">
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--primary-on-accent)"><path d="M12 21s-7.5-4.6-10-9.3C.3 7.9 2.3 4 6 4c2.2 0 3.7 1.2 6 3.6C14.3 5.2 15.8 4 18 4c3.7 0 5.7 3.9 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span data-en>RishtaElite</span><span data-ur class="urdu">رشتہ ایلیٹ</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="btn-ur" onclick="setLang('ur')">UR</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <a href="register.html" class="btn btn-ghost magnetic"><span data-en>Join Free</span><span data-ur class="urdu">مفت شامل ہوں</span></a>
+    </div>
+  </nav>
+</header>
+
+<section class="auth-shell">
+  <svg class="jaali-bg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="jaali" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="#F0954F" stroke-width="1"/>
+        <circle cx="30" cy="30" r="6" fill="none" stroke="#F0954F" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#jaali)"/>
+  </svg>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="auth-card" id="authCard">
+
+    <!-- STEP 1: email + password -->
+    <div class="step active" id="stepPassword">
+      <span class="auth-eyebrow" data-en>Welcome Back</span><span class="auth-eyebrow urdu" data-ur style="display:none">خوش آمدید</span>
+      <h1 data-en>Log in to your account</h1><h1 class="urdu" data-ur style="display:none">اپنے اکاؤنٹ میں لاگ ان کریں</h1>
+      <p class="auth-sub" data-en>We'll email you a one-time code after your password to keep your profile secure.</p><p class="auth-sub urdu" data-ur style="display:none">آپ کی پروفائل کو محفوظ رکھنے کے لیے پاس ورڈ کے بعد ہم آپ کو ای میل پر ایک بار کا کوڈ بھیجیں گے۔</p>
+
+      <div class="alert alert-error" id="passwordAlert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        <span id="passwordAlertText"></span>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="field" id="field-loginEmail">
+          <label data-en>Email Address</label><label class="urdu" data-ur style="display:none">ای میل ایڈریس</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" required>
+          <span class="field-error">Enter a valid email address</span>
+        </div>
+        <div class="field" id="field-loginPassword">
+          <label data-en>Password</label><label class="urdu" data-ur style="display:none">پاس ورڈ</label>
+          <input type="password" id="loginPassword" placeholder="Your password" required>
+          <span class="field-error">Enter your password</span>
+        </div>
+        <a href="#" class="forgot-link" id="forgotLink" data-en>Forgot password?</a><a class="forgot-link urdu" href="#" data-ur style="display:none">پاس ورڈ بھول گئے؟</a>
+
+        <button type="submit" class="btn btn-solid" id="passwordBtn">
+          <span class="spinner" id="passwordSpinner"></span>
+          <span data-en id="passwordBtnText">Continue</span><span class="urdu" data-ur style="display:none">جاری رکھیں</span>
+        </button>
+      </form>
+
+      <div class="auth-switch" data-en>New to RishtaElite? <a href="register.html">Create a free profile</a></div>
+    </div>
+
+    <!-- STEP 2: OTP verification -->
+    <div class="step" id="stepOtp">
+      <span class="auth-eyebrow" data-en>Verification</span><span class="auth-eyebrow urdu" data-ur style="display:none">تصدیق</span>
+      <h1 data-en>Enter your code</h1><h1 class="urdu" data-ur style="display:none">اپنا کوڈ درج کریں</h1>
+      <p class="auth-sub" data-en>We sent a 6-digit code to <span class="otp-target" id="otpEmailTarget"></span>. It expires in 5 minutes.</p>
+
+      <div class="alert alert-error" id="otpAlert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        <span id="otpAlertText"></span>
+      </div>
+
+      <div class="otp-boxes" id="otpBoxes">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+        <input type="text" inputmode="numeric" maxlength="1" class="otp-digit">
+      </div>
+
+      <div class="otp-timer">
+        <span data-en>Didn't get it?</span><span class="urdu" data-ur style="display:none">کوڈ موصول نہیں ہوا؟</span>
+        <button id="resendBtn" data-en disabled>Resend code (60s)</button><button class="urdu" disabled data-ur style="display:none">کوڈ دوبارہ بھیجیں (60 سیکنڈ)</button>
+      </div>
+
+      <button type="button" class="btn btn-solid" id="otpBtn" style="margin-top:16px;">
+        <span class="spinner" id="otpSpinner"></span>
+        <span data-en id="otpBtnText">Verify &amp; Log In</span><span class="urdu" data-ur style="display:none">تصدیق کریں اور لاگ ان کریں</span>
+      </button>
+    </div>
+
+    <!-- STEP 3: success -->
+    <div class="step" id="stepDone">
+      <div class="success-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h1 style="text-align:center" data-en>You're verified</h1><h1 class="urdu" style="text-align:center" data-ur style="display:none">آپ کی تصدیق ہو گئی</h1>
+      <p class="auth-sub" style="text-align:center" data-en>Taking you to your dashboard…</p><p class="auth-sub urdu" style="text-align:center" data-ur style="display:none">آپ کو ڈیش بورڈ پر لے جایا جا رہا ہے…</p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  /* ---------- Preloader ---------- */
+  (function preloader() {
+    const word = 'RishtaElite';
+    const wordEl = document.getElementById('preWord');
+    let delay = 0.1;
+    word.split('').forEach(ch => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.animationDelay = delay + 's';
+      wordEl.appendChild(span);
+      delay += 0.045;
+    });
+    const MIN_DISPLAY_MS = 1200;
+    const start = Date.now();
+    function hide() {
+      const elapsed = Date.now() - start;
+      const wait = Math.max(0, MIN_DISPLAY_MS - elapsed);
+      setTimeout(() => {
+        const pre = document.getElementById('preloader');
+        pre.classList.add('fade-out');
+        document.body.classList.remove('preloading');
+        setTimeout(() => pre.remove(), 700);
+      }, wait);
+    }
+    if (document.readyState === 'complete') hide();
+    else window.addEventListener('load', hide);
+  })();
+
+  /* ================= CONFIG — replace with your real project values ================= */
+  const SUPABASE_URL = 'https://xwjozvmmrqpbrbjktsdb.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_kHXOkFUWgHhniSemWwvlxg_FsCUGoiL';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // If already logged in and fully 2FA-verified, there's no reason to show
+  // the login form again — send straight to the dashboard.
+  (async function redirectIfLoggedIn() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user?.app_metadata?.otp_verified === true) {
+        window.location.href = 'profiles.html';
+      }
+    }
+  })();
+
+  /* EmailJS + OTP hashing now live server-side in the Edge Functions (send-otp / verify-otp). */
+  /* ==================================================================================== */
+
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('rishtaelite-theme'); } catch (e) {}
+    document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  })();
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('rishtaelite-theme', next); } catch (e) {}
+  }
+  function setLang(lang) {
+    document.body.classList.toggle('lang-ur', lang === 'ur');
+    document.getElementById('btn-en')?.classList.toggle('active', lang === 'en');
+    document.getElementById('btn-ur')?.classList.toggle('active', lang === 'ur');
+
+    // Only hide an English element if a real Urdu replacement sits directly
+    // next to it in the DOM. Anything without a translated partner stays
+    // visible in English instead of vanishing — this is what was causing
+    // content to disappear and break layouts when switching to Urdu.
+    document.querySelectorAll('[data-en]').forEach(en => {
+      let ur = en.nextElementSibling;
+      if (!(ur && ur.hasAttribute('data-ur'))) {
+        ur = en.previousElementSibling;
+        if (!(ur && ur.hasAttribute('data-ur'))) ur = null;
+      }
+      if (ur) {
+        en.style.display = lang === 'ur' ? 'none' : '';
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      } else {
+        en.style.display = '';
+      }
+    });
+
+    // Catch any data-ur element that never got paired above (defensive).
+    document.querySelectorAll('[data-ur]').forEach(ur => {
+      let en = ur.previousElementSibling;
+      if (!(en && en.hasAttribute('data-en'))) {
+        en = ur.nextElementSibling;
+        if (!(en && en.hasAttribute('data-en'))) en = null;
+      }
+      if (!en) {
+        ur.style.display = lang === 'ur' ? '' : 'none';
+      }
+    });
+  }
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+  });
+
+  function goToStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+  function setFieldError(id, show) { document.getElementById('field-' + id).classList.toggle('invalid', show); }
+
+  let currentUser = null;
+  let currentEmail = '';
+
+  /* ---------- STEP 1: password login ---------- */
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    document.getElementById('passwordAlert').classList.remove('show');
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    setFieldError('loginEmail', !emailOk);
+    setFieldError('loginPassword', !password);
+    if (!emailOk || !password) return;
+
+    const btn = document.getElementById('passwordBtn');
+    const spinner = document.getElementById('passwordSpinner');
+    const btnText = document.getElementById('passwordBtnText');
+    btn.disabled = true; spinner.classList.add('show'); btnText.textContent = 'Checking…';
+
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      currentUser = data.user;
+      currentEmail = email;
+      await sendOtp();
+      document.getElementById('otpEmailTarget').textContent = email;
+      goToStep('stepOtp');
+      startResendTimer();
+      document.querySelector('.otp-digit').focus();
+    } catch (err) {
+      document.getElementById('passwordAlertText').textContent = err.message || 'Invalid email or password.';
+      document.getElementById('passwordAlert').classList.add('show');
+    } finally {
+      btn.disabled = false; spinner.classList.remove('show'); btnText.textContent = 'Continue';
+    }
+  });
+
+  /* ---------- Generate + send OTP via EmailJS, store in Supabase for verification ---------- */
+  async function sendOtp() {
+    // Calls the send-otp Edge Function: it generates the code, hashes it,
+    // stores the hash (not the code) server-side, and emails it via EmailJS
+    // using a private key that never reaches the browser.
+    const { error } = await supabaseClient.functions.invoke('send-otp');
+    if (error) throw error;
+  }
+
+  /* ---------- OTP boxes: auto-advance / backspace / paste ---------- */
+  const otpInputs = Array.from(document.querySelectorAll('.otp-digit'));
+  otpInputs.forEach((inp, i) => {
+    inp.addEventListener('input', () => {
+      inp.value = inp.value.replace(/[^0-9]/g, '');
+      if (inp.value && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) otpInputs[i - 1].focus();
+    });
+    inp.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const digits = (e.clipboardData.getData('text').match(/\d/g) || []).slice(0, 6);
+      digits.forEach((d, idx) => { if (otpInputs[idx]) otpInputs[idx].value = d; });
+      if (digits.length) otpInputs[Math.min(digits.length, otpInputs.length) - 1].focus();
+    });
+  });
+
+  /* ---------- Resend timer ---------- */
+  let resendInterval;
+  function startResendTimer() {
+    let seconds = 60;
+    const btn = document.getElementById('resendBtn');
+    btn.disabled = true;
+    clearInterval(resendInterval);
+    resendInterval = setInterval(() => {
+      seconds--;
+      btn.textContent = `Resend code (${seconds}s)`;
+      if (seconds <= 0) {
+        clearInterval(resendInterval);
+        btn.textContent = 'Resend code';
+        btn.disabled = false;
+      }
+    }, 1000);
+  }
+  document.getElementById('resendBtn').addEventListener('click', async () => {
+    document.getElementById('resendBtn').disabled = true;
+    await sendOtp();
+    startResendTimer();
+  });
+
+  /* ---------- Verify OTP ---------- */
+  document.getElementById('otpBtn').addEventListener('click', async () => {
+    document.getElementById('otpAlert').classList.remove('show');
+    const rawValues = otpInputs.map(i => i.value);
+    const code = rawValues.map(v => v.trim()).join('');
+    console.log('OTP box values:', rawValues, '→ combined code:', JSON.stringify(code), 'length:', code.length);
+    if (code.length !== 6) {
+      document.getElementById('otpAlertText').textContent = 'Enter all 6 digits.';
+      document.getElementById('otpAlert').classList.add('show');
+      return;
+    }
+
+    const btn = document.getElementById('otpBtn');
+    const spinner = document.getElementById('otpSpinner');
+    const btnText = document.getElementById('otpBtnText');
+    btn.disabled = true; spinner.classList.add('show'); btnText.textContent = 'Verifying…';
+
+    try {
+      // verify-otp checks the hash server-side, then stamps app_metadata.otp_verified
+      // on the user's account. RLS policies gate on that claim, so this is real
+      // server-side enforcement, not just a client-side redirect.
+      const { data, error } = await supabaseClient.functions.invoke('verify-otp', { body: { code } });
+      if (error) throw new Error((data && data.error) || error.message || 'Verification failed.');
+      if (data && data.error) throw new Error(data.error);
+
+      // Pull a fresh JWT so it carries the new otp_verified claim.
+      await supabaseClient.auth.refreshSession();
+
+      goToStep('stepDone');
+      setTimeout(() => { window.location.href = 'profiles.html'; }, 1400);
+    } catch (err) {
+      document.getElementById('otpAlertText').textContent = err.message || 'Verification failed.';
+      document.getElementById('otpAlert').classList.add('show');
+      otpInputs.forEach(i => i.value = '');
+      otpInputs[0].focus();
+    } finally {
+      btn.disabled = false; spinner.classList.remove('show'); btnText.textContent = 'Verify & Log In';
+    }
+  });
+
+  /* ---------- Forgot password ---------- */
+  document.getElementById('forgotLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const url = email ? 'reset-password.html?email=' + encodeURIComponent(email) : 'reset-password.html';
+    window.location.href = url;
+  });
+</script>
+</body>
+</html>
